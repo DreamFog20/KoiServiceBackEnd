@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "Booking")
@@ -32,7 +31,7 @@ public class Booking {
     @JoinColumn(name = "koiID", nullable = false)
     private Koi koi;
 
-    // Quan hệ với bảng Veteran (bác sĩ thú y)
+    // Quan hệ với bảng Veterian (bác sĩ thú y)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vetID", nullable = false)
     private Veterian vet;
@@ -46,9 +45,13 @@ public class Booking {
     @Temporal(TemporalType.DATE)
     private Date date;
 
+    // Quan hệ với bảng Payment
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "paymentID", nullable = false)
     private Payment payment;
 
+    // Quan hệ một-một với bảng Feedback
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Feedback feedback; // Quan hệ một-một với bảng Feedback
 
 }
