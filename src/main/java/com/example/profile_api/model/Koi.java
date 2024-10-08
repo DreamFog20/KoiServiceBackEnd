@@ -36,6 +36,4 @@ public class Koi {
     // Quan hệ với bảng Booking
     @OneToMany(mappedBy = "koi", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Booking> bookings;
-
-
 }
