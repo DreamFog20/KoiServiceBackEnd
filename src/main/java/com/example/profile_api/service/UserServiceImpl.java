@@ -4,6 +4,7 @@ import com.example.profile_api.model.Role;
 import com.example.profile_api.model.User;
 import com.example.profile_api.repository.RoleRepository;
 import com.example.profile_api.repository.UserRepository;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,19 +71,22 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
     @Override
-    public User getUserByEmailAndPassword(String name, String password)  {
-        User user = userRepository.findByEmailAndPassword(name, password);
-        if(user == null){
-            try {
-                throw new Exception("Invalid id and password");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+    public User getUserByEmailAndPassword(String email, String password) {
+        User user = userRepository.findByEmailAndPassword(email, password);
+
+        if (user == null) {
+            throw new RuntimeException("Invalid email and password");
         }
+
+        //  nạp thêm thông tin role, bạn có thể giữ đoạn này:
+        Hibernate.initialize(user.getRole());
+
+        //  trả về roleId
         return user;
     }
     public List<User> getALlUser(){
         return userRepository.findAll();
     }
+
 }
 

@@ -58,18 +58,24 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User user) throws Exception {
         try {
-            if(user.getEmail() == null || user.getPassword() == null) {
+            if (user.getEmail() == null || user.getPassword() == null) {
                 throw new Exception("Email or Password is Empty");
             }
+
             User userData = userService.getUserByEmailAndPassword(user.getEmail(), user.getPassword());
 
-            if(userData == null){
+            if (userData == null) {
                 throw new Exception("Email or Password is Invalid");
             }
+
+            // Đặt password là null để không gửi về
             userData.setPassword(null);
 
-            Map<String,String> token = jwtGenerator.generateToken(user);
-            LoginToken loginToken = new LoginToken(token.get("token"),userData);
+            // Tạo token
+            Map<String, String> token = jwtGenerator.generateToken(user);
+
+            // Gửi thông tin user, bao gồm cả roleId
+            LoginToken loginToken = new LoginToken(token.get("token"), userData);
             return new ResponseEntity<>(loginToken, HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e.getMessage());

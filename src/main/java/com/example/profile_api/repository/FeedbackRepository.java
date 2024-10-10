@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
-    // Bạn có thể thêm các phương thức tùy chỉnh ở đây nếu cần
+
 }
 
