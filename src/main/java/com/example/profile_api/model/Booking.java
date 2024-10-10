@@ -20,7 +20,8 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="bookingID")
     private Integer bookingID;
-
+    @Column(name = "status", nullable = false)
+    private String status; // Trạng thái của Booking
     // Quan hệ với bảng Users
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "userID", nullable = false)
