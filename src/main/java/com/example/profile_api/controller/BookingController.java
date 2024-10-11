@@ -44,10 +44,7 @@ public class BookingController {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment với ID " + booking.getPayment().getPaymentID() + " không tồn tại."));
 
 
-            // Kiểm tra email của Veterian
-            if (booking.getVet() == null || booking.getVet().getEmail() == null) {
-                return ResponseEntity.badRequest().body("Error: Veterian email is required.");
-            }
+
 
             // Kiểm tra xem Service có tồn tại không
             serviceService.getServiceById(booking.getService().getServiceID())
@@ -70,8 +67,7 @@ public class BookingController {
                 if (cve.getConstraintName() != null) {
                 // Xử lý các ràng buộc cụ thể
                 switch (cve.getConstraintName()) {
-                    case "veterian_email_not_null":
-                        return ResponseEntity.badRequest().body("Error: Veterian email is required.");
+
                     case "FK__Booking__koiID__52593CB8":
                         return ResponseEntity.badRequest().body("Koi với ID " + booking.getKoi().getKoiID() + " không tồn tại.");
                     case "FK__Booking__service__534D60F1":
