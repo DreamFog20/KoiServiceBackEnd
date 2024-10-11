@@ -43,7 +43,7 @@ public class VeterianService {
         veterian.setPhone(veterianDetails.getPhone());
         veterian.setEmail(veterianDetails.getEmail());
         veterian.setSpecialization(veterianDetails.getSpecialization());
-        // Cập nhật các thuộc tính khác nếu có
+
 
         return veterianRepository.save(veterian);
     }

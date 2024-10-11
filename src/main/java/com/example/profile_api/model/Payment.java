@@ -36,9 +36,7 @@ public class Payment {
     private String status;
 
     // Quan hệ với bảng Booking
-    @OneToMany(fetch = FetchType.LAZY)
-
-    private List<Booking> booking;
-
-
+    @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY)
+    private List<Booking> bookings;
 }
+

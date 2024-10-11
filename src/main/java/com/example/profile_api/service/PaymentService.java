@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 public class PaymentService {
 
-    private final PaymentRepository paymentRepository;
+    private static PaymentRepository paymentRepository;
 
     @Autowired
     public PaymentService(PaymentRepository paymentRepository) {
@@ -31,7 +31,7 @@ public class PaymentService {
     }
 
     // 3. Lấy thông tin Payment theo ID
-    public Optional<Payment> getPaymentById(Integer paymentID) {
+    public static Optional<Payment> getPaymentById(Integer paymentID) {
         return paymentRepository.findById(paymentID);
     }
 
