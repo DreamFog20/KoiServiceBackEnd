@@ -2,16 +2,27 @@ package com.example.profile_api.service;
 
 import com.example.profile_api.model.Booking;
 import com.example.profile_api.model.Feedback;
+import com.example.profile_api.model.VetSchedule;
+import com.example.profile_api.model.Veterian;
 import com.example.profile_api.repository.BookingRepository;
+import com.example.profile_api.repository.VetScheduleRepository;
+import com.example.profile_api.repository.VeterianRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class BookingService {
+    @Autowired
+    private VeterianRepository veterianRepository;
 
+    @Autowired
+    private VetScheduleRepository vetScheduleRepository;
     private final BookingRepository bookingRepository;
 
     @Autowired
@@ -66,5 +77,36 @@ public class BookingService {
         bookingRepository.save(booking); // Cập nhật Booking để liên kết với Feedback
 
         return feedback; // Trả về Feedback đã được lưu
+    }
+    //7 Tìm kiếm bác sĩ có chuyên môn phù hợp với loại dịch vụ
+    public List<Veterian> findAvailableVets(String serviceType, LocalDate date, LocalTime timeSlot) {
+
+        List<Veterian> vets = veterianRepository.findBySpecialization(serviceType);
+        List<Veterian> availableVets = new ArrayList<>();
+
+        //  Kiểm tra lịch làm việc của từng bác sĩ
+        for (Veterian vet : vets) {
+            List<VetSchedule> schedules = vetScheduleRepository.findByVeterianAndScheduleDateAndTimeSlotAndAvailability(
+                    vet, date, timeSlot, true);
+            if (!schedules.isEmpty()) {
+                availableVets.add(vet);
+            }
+        }
+
+        return availableVets;
+    }
+    // 8. Kiểm tra xem Booking có tồn tại không
+    public Booking assignVetToBooking(Integer bookingId, Integer vetId) {
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new IllegalArgumentException("Booking not found with ID: " + bookingId));
+
+        //  Kiểm tra xem Veterian có tồn tại không
+        Veterian vet = veterianRepository.findById(vetId)
+                .orElseThrow(() -> new IllegalArgumentException("Veterian not found with ID: " + vetId));
+
+        //  Phân công bác sĩ cho đơn đặt lịch
+        booking.setVet(vet);
+        return bookingRepository.save(booking);
     }
 }
