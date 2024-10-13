@@ -18,7 +18,8 @@ import java.util.List;
 import java.lang.String;
 
 @RestController
-@RequestMapping("/booking")
+@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/api/bookings")
 public class BookingController {
 
     private final BookingService bookingService;
@@ -37,7 +38,7 @@ public class BookingController {
         this.paymentService = paymentService;
     }
 
-    @PostMapping("/createBooking")
+        @PostMapping("/createBooking")
     public ResponseEntity<?> createBooking(@RequestBody Booking booking) {
         try {
             // Kiểm tra xem User có tồn tại không
@@ -136,13 +137,16 @@ public class BookingController {
         return "Feedback created successfully!";
     }
 
-    @PostMapping("/availableVets")
-    public ResponseEntity<List<Veterian>> getAvailableVets(@RequestBody BookingRequest request) {
+    @GetMapping("/availableVets")
+    public ResponseEntity<List<Veterian>> getAvailableVets(
+            @RequestParam String serviceType,
+            @RequestParam LocalDate date,
+            @RequestParam String timeSlot)  {
         try {
             List<Veterian> availableVets = bookingService.findAvailableVets(
-                    request.getServiceType(),
-                    request.getDate(),
-                    request.getTimeSlot());
+                    serviceType, // Use serviceType directly
+                    date,        // Use date directly
+                    timeSlot);    // Use timeSlot directly
             return new ResponseEntity<>(availableVets, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
