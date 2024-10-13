@@ -37,5 +37,6 @@ public class Veterian {
     @OneToMany(  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Booking> booking;
 
-
+    @OneToMany(mappedBy = "veterian", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<VetSchedule> vetSchedules;
 }

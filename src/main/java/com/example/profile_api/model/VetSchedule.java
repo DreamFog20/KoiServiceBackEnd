@@ -22,15 +22,15 @@ public class VetSchedule {
     @Column(name = "ScheduleID")
     private Integer scheduleID;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "VetID", nullable = false)
-    private Veterian veterian; // Quan hệ với bảng Veterian (Bác sĩ thú y)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE) // Thêm CascadeType.MERGE
+    @JoinColumn(name = "VetID", nullable = true)
+    private Veterian veterian;
 
     @Column(name = "Schedule_Date", nullable = false)
-    private LocalDate scheduleDate; // Ngày làm việc của bác sĩ
+    private LocalDate scheduleDate;
 
     @Column(name = "Time_Slot", nullable = false)
-    private LocalTime timeSlot; // Khoảng thời gian làm việc (có thể là giờ)
+    private String timeSlot;
 
     @Column(name = "Type", nullable = false)
     private String type; // Loại lịch (có thể là kiểm tra, tư vấn, ...)

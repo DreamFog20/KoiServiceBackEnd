@@ -14,6 +14,6 @@ public interface VetScheduleRepository extends JpaRepository<VetSchedule, Intege
 
     // Tìm kiếm lịch làm việc của bác sĩ theo bác sĩ, ngày, giờ và trạng thái rảnh/bận
     List<VetSchedule> findByVeterianAndScheduleDateAndTimeSlotAndAvailability(
-            Veterian veterian, LocalDate scheduleDate, LocalTime timeSlot, Boolean availability);
+            Veterian veterian, LocalDate scheduleDate, String timeSlot, Boolean availability);
 
 }

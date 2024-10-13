@@ -79,16 +79,20 @@ public class BookingService {
         return feedback; // Trả về Feedback đã được lưu
     }
     //7 Tìm kiếm bác sĩ có chuyên môn phù hợp với loại dịch vụ
-    public List<Veterian> findAvailableVets(String serviceType, LocalDate date, LocalTime timeSlot) {
+    public List<Veterian> findAvailableVets(String serviceType, LocalDate date, String timeSlot) { // Thay đổi kiểu dữ liệu timeSlot
 
         List<Veterian> vets = veterianRepository.findBySpecialization(serviceType);
         List<Veterian> availableVets = new ArrayList<>();
 
-        //  Kiểm tra lịch làm việc của từng bác sĩ
         for (Veterian vet : vets) {
             List<VetSchedule> schedules = vetScheduleRepository.findByVeterianAndScheduleDateAndTimeSlotAndAvailability(
-                    vet, date, timeSlot, true);
+                    vet, date, timeSlot, true); // timeSlot giờ là String
             if (!schedules.isEmpty()) {
+                // **Quan trọng:** Set veterinarian cho mỗi VetSchedule trong schedules
+                for (VetSchedule schedule : schedules) {
+                    schedule.setVeterian(vet);
+                    vetScheduleRepository.save(schedule); // Lưu VetSchedule với veterinarian đã được set
+                }
                 availableVets.add(vet);
             }
         }

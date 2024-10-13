@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.lang.String;
 
 @RestController
 @RequestMapping("/booking")
@@ -24,7 +25,7 @@ public class BookingController {
     private final UserService userService;
     private final ServiceService serviceService;
     private final VeterianService veterianService; // Inject VeterianService
-    private final PaymentService paymentService;
+    private final PaymentService  paymentService;
 
     @Autowired
     public BookingController(BookingService bookingService, UserService userService,
@@ -138,12 +139,16 @@ public class BookingController {
     @PostMapping("/availableVets")
     public ResponseEntity<List<Veterian>> getAvailableVets(@RequestBody BookingRequest request) {
         try {
-            List<Veterian> availableVets = bookingService.findAvailableVets(request.getServiceType(), request.getDate(), request.getTimeSlot());
+            List<Veterian> availableVets = bookingService.findAvailableVets(
+                    request.getServiceType(),
+                    request.getDate(),
+                    request.getTimeSlot());
             return new ResponseEntity<>(availableVets, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Or a more specific error
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
     }
 

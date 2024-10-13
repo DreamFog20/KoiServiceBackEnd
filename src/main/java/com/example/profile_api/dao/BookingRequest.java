@@ -15,7 +15,7 @@ import java.time.LocalTime;
 public class BookingRequest {
     private String serviceType;
     private LocalDate date;
-    private LocalTime timeSlot;
+    private String timeSlot;
 
 
 }
