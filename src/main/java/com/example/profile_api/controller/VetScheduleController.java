@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/vetschedules")
 public class VetScheduleController {
 
@@ -28,7 +29,11 @@ public class VetScheduleController {
         // Tạo VetSchedule từ VetScheduleRequest
         VetSchedule vetSchedule = new VetSchedule();
         vetSchedule.setScheduleDate(request.getScheduleDate());
-        vetSchedule.setTimeSlot(request.getTimeSlot());
+
+        //  Sử dụng startTime và endTime từ request
+        vetSchedule.setStartTime(request.getStartTime());
+        vetSchedule.setEndTime(request.getEndTime());
+
         vetSchedule.setType(request.getType());
         vetSchedule.setAvailability(request.getAvailability());
 
@@ -39,6 +44,7 @@ public class VetScheduleController {
 
         VetSchedule createdVetSchedule = vetScheduleService.createVetSchedule(vetSchedule);
         return new ResponseEntity<>(createdVetSchedule, HttpStatus.CREATED);
+
     }
 
     @GetMapping

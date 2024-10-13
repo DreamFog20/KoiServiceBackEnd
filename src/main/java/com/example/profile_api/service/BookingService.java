@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
@@ -79,25 +80,27 @@ public class BookingService {
         return feedback; // Trả về Feedback đã được lưu
     }
     //7 Tìm kiếm bác sĩ có chuyên môn phù hợp với loại dịch vụ
-    public List<Veterian> findAvailableVets(String serviceType, LocalDate date, String timeSlot) { // Thay đổi kiểu dữ liệu timeSlot
+    public List<Veterian> findAvailableVetsByDate(LocalDate date) {
+        List<VetSchedule> schedules = vetScheduleRepository.findByScheduleDateAndAvailability(date, true);
+        List<Integer> vetIds = schedules.stream()
+                .map(schedule -> schedule.getVeterian().getVetID())
+                .distinct()
+                .collect(Collectors.toList());
+        return veterianRepository.findAllById(vetIds);
+    }
 
-        List<Veterian> vets = veterianRepository.findBySpecialization(serviceType);
-        List<Veterian> availableVets = new ArrayList<>();
+    public List<VetSchedule> findAvailableSlotsByVetAndDate(Integer vetId, LocalDate date) {
+        List<VetSchedule> schedules = vetScheduleRepository.findByVeterianVetIDAndScheduleDateAndAvailability(vetId, date, true);
+        List<Booking> bookings = bookingRepository.findByVetVetIDAndDate(vetId, date);
 
-        for (Veterian vet : vets) {
-            List<VetSchedule> schedules = vetScheduleRepository.findByVeterianAndScheduleDateAndTimeSlotAndAvailability(
-                    vet, date, timeSlot, true); // timeSlot giờ là String
-            if (!schedules.isEmpty()) {
-                // **Quan trọng:** Set veterinarian cho mỗi VetSchedule trong schedules
-                for (VetSchedule schedule : schedules) {
-                    schedule.setVeterian(vet);
-                    vetScheduleRepository.save(schedule); // Lưu VetSchedule với veterinarian đã được set
-                }
-                availableVets.add(vet);
-            }
-        }
+        List<Integer> bookedScheduleIds = bookings.stream()
+                .filter(booking -> booking.getVetSchedule() != null)
+                .map(booking -> booking.getVetSchedule().getScheduleID())
+                .collect(Collectors.toList());
 
-        return availableVets;
+        return schedules.stream()
+                .filter(schedule -> !bookedScheduleIds.contains(schedule.getScheduleID()))
+                .collect(Collectors.toList());
     }
     // 8. Kiểm tra xem Booking có tồn tại không
     public Booking assignVetToBooking(Integer bookingId, Integer vetId) {

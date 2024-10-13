@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/feedback")
+@CrossOrigin(origins = "http://localhost:5173")
 public class FeedbackController {
 
     private final FeedbackService feedbackService;

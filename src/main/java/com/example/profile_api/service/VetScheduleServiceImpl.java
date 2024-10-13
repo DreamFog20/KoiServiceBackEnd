@@ -30,11 +30,16 @@ public class VetScheduleServiceImpl implements VetScheduleService {
     }
 
     @Override
+
     public VetSchedule updateVetSchedule(Integer scheduleID, VetSchedule vetSchedule) {
         VetSchedule existingVetSchedule = getVetScheduleById(scheduleID);
         existingVetSchedule.setVeterian(vetSchedule.getVeterian());
         existingVetSchedule.setScheduleDate(vetSchedule.getScheduleDate());
-        existingVetSchedule.setTimeSlot(vetSchedule.getTimeSlot());
+
+        // Cập nhật startTime và endTime thay vì timeSlot
+        existingVetSchedule.setStartTime(vetSchedule.getStartTime());
+        existingVetSchedule.setEndTime(vetSchedule.getEndTime());
+
         existingVetSchedule.setType(vetSchedule.getType());
         existingVetSchedule.setAvailability(vetSchedule.getAvailability());
         return vetScheduleRepository.save(existingVetSchedule);

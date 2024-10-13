@@ -10,10 +10,11 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Repository
+
 public interface VetScheduleRepository extends JpaRepository<VetSchedule, Integer> {
+    // Tìm kiếm lịch làm việc của bác sĩ
 
-    // Tìm kiếm lịch làm việc của bác sĩ theo bác sĩ, ngày, giờ và trạng thái rảnh/bận
-    List<VetSchedule> findByVeterianAndScheduleDateAndTimeSlotAndAvailability(
-            Veterian veterian, LocalDate scheduleDate, String timeSlot, Boolean availability);
+    List<VetSchedule> findByScheduleDateAndAvailability(LocalDate scheduleDate, Boolean availability);
 
+    List<VetSchedule> findByVeterianVetIDAndScheduleDateAndAvailability(Integer vetId, LocalDate scheduleDate, Boolean availability);
 }

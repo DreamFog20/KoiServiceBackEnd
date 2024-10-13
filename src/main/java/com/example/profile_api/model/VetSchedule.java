@@ -22,20 +22,22 @@ public class VetSchedule {
     @Column(name = "ScheduleID")
     private Integer scheduleID;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE) // Thêm CascadeType.MERGE
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "VetID", nullable = true)
     private Veterian veterian;
 
     @Column(name = "Schedule_Date", nullable = false)
     private LocalDate scheduleDate;
 
-    @Column(name = "Time_Slot", nullable = false)
-    private String timeSlot;
+    @Column(name = "startTime", nullable = false)
+    private LocalTime startTime;
+
+    @Column(name = "endTime", nullable = false)
+    private LocalTime endTime;
 
     @Column(name = "Type", nullable = false)
-    private String type; // Loại lịch (có thể là kiểm tra, tư vấn, ...)
+    private String type;
 
     @Column(name = "Availability", nullable = false)
-    private Boolean availability; // Tình trạng sẵn có của bác sĩ (true: sẵn sàng, false: không sẵn sàng)
+    private Boolean availability;
 }
-

@@ -56,5 +56,8 @@
         // Quan hệ một-một với bảng Feedback
         @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
         private Feedback feedback; // Quan hệ một-một với bảng Feedback
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "scheduleID", nullable = true) // Cho phép scheduleID là null
+        private VetSchedule vetSchedule;
     }
 
