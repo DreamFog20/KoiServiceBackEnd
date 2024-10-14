@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+
 import java.time.LocalTime;
 
 @Getter
@@ -14,7 +14,8 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class BookingRequest {
     private String serviceType;
-    private LocalDate date;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private String timeSlot;
 
 

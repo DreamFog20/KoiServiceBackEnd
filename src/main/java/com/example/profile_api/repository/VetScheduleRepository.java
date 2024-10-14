@@ -17,4 +17,5 @@ public interface VetScheduleRepository extends JpaRepository<VetSchedule, Intege
     List<VetSchedule> findByScheduleDateAndAvailability(LocalDate scheduleDate, Boolean availability);
 
     List<VetSchedule> findByVeterianVetIDAndScheduleDateAndAvailability(Integer vetId, LocalDate scheduleDate, Boolean availability);
+
 }

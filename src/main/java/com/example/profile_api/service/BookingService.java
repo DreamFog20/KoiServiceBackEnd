@@ -89,6 +89,7 @@ public class BookingService {
         return veterianRepository.findAllById(vetIds);
     }
 
+
     public List<VetSchedule> findAvailableSlotsByVetAndDate(Integer vetId, LocalDate date) {
         List<VetSchedule> schedules = vetScheduleRepository.findByVeterianVetIDAndScheduleDateAndAvailability(vetId, date, true);
         List<Booking> bookings = bookingRepository.findByVetVetIDAndDate(vetId, date);

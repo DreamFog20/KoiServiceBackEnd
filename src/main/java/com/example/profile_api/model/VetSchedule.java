@@ -35,7 +35,7 @@ public class VetSchedule {
     @Column(name = "endTime", nullable = false)
     private LocalTime endTime;
 
-    @Column(name = "Type", nullable = false)
+    @Column(name= "Type", nullable = false)
     private String type;
 
     @Column(name = "Availability", nullable = false)
