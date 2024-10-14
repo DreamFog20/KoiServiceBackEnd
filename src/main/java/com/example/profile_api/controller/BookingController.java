@@ -141,7 +141,7 @@
         }
 
         @PostMapping("/available-vets-by-date")
-        public ResponseEntity<List<Veterian>> getAvailableVetsByDate(@RequestParam LocalDate date) {
+        public ResponseEntity<List<Veterian>> getAvailableVetsByDate(@RequestBody LocalDate date) {
             try {
                 List<Veterian> availableVets = bookingService.findAvailableVetsByDate(date);
                 return new ResponseEntity<>(availableVets, HttpStatus.OK);
