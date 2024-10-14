@@ -1,3 +1,4 @@
+
 package com.example.profile_api.model;
 
 import jakarta.persistence.*;
@@ -39,4 +40,3 @@ public class Payment {
     @OneToMany(mappedBy = "payment", fetch = FetchType.LAZY)
     private List<Booking> bookings;
 }
-

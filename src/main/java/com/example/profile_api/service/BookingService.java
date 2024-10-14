@@ -1,3 +1,4 @@
+
 package com.example.profile_api.service;
 
 import com.example.profile_api.model.Booking;
@@ -88,6 +89,7 @@ public class BookingService {
                 .collect(Collectors.toList());
         return veterianRepository.findAllById(vetIds);
     }
+
 
     public List<VetSchedule> findAvailableSlotsByVetAndDate(Integer vetId, LocalDate date) {
         List<VetSchedule> schedules = vetScheduleRepository.findByVeterianVetIDAndScheduleDateAndAvailability(vetId, date, true);

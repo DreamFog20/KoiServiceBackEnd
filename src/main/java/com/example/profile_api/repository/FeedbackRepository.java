@@ -1,3 +1,4 @@
+
 package com.example.profile_api.repository;
 
 
@@ -10,4 +11,3 @@ import org.springframework.stereotype.Repository;
 public interface FeedbackRepository extends JpaRepository<Feedback, Integer> {
 
 }
-

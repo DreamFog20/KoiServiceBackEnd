@@ -1,5 +1,8 @@
+
 package com.example.profile_api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,6 +27,7 @@ public class VetSchedule {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "VetID", nullable = true)
+    @JsonManagedReference
     private Veterian veterian;
 
     @Column(name = "Schedule_Date", nullable = false)
@@ -35,7 +39,7 @@ public class VetSchedule {
     @Column(name = "endTime", nullable = false)
     private LocalTime endTime;
 
-    @Column(name = "Type", nullable = false)
+    @Column(name= "Type", nullable = false)
     private String type;
 
     @Column(name = "Availability", nullable = false)

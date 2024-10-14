@@ -1,6 +1,9 @@
 package com.example.profile_api.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +18,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Veterian {
 
     @Id
@@ -38,5 +42,7 @@ public class Veterian {
     private List<Booking> booking;
 
     @OneToMany(mappedBy = "veterian", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference
+
     private List<VetSchedule> vetSchedules;
 }
