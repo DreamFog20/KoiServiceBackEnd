@@ -103,14 +103,10 @@ public class BookingController {
     }
 
     @PostMapping("/available-vets")
-    public ResponseEntity<List<Veterian>> getAvailableVetsByDate(@RequestBody AvailableVetRequest date) {
+    public ResponseEntity<List<VetSchedule>> getAvailableVetsByDate(@RequestBody AvailableVetRequest request) {
         try {
-            List<Veterian> availableVets = bookingService.findAvailableVetsByDate(date.getDate());
-            // Force Hibernate tải đối tượng Veterian
-            for (Veterian vet : availableVets) {
-                vet.getVetID();
-            }
-            return new ResponseEntity<>(availableVets, HttpStatus.OK);
+            List<VetSchedule> availableSchedules = bookingService.findAvailableSchedulesByDate(request.getDate());
+            return new ResponseEntity<>(availableSchedules, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -128,33 +124,23 @@ public class BookingController {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dịch vụ không tồn tại."));
 
             LocalDate date = booking.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            List<Veterian> availableVets = bookingService.findAvailableVetsByDate(date);
+            List<VetSchedule> availableSchedules = bookingService.findAvailableSchedulesByDate(date); // Thay đổi ở đây
 
-            if (availableVets.isEmpty()) {
+            if (availableSchedules.isEmpty()) { // Thay đổi ở đây
                 return ResponseEntity.badRequest().body("Không có bác sĩ rảnh vào ngày này.");
             }
 
             Random random = new Random();
-            Veterian randomVet = availableVets.get(random.nextInt(availableVets.size()));
-            booking.setVet(randomVet);
-
-            List<VetSchedule> availableSchedules = bookingService.findAvailableSlotsByVetAndDate(randomVet.getVetID(), date);
-            if (availableSchedules.isEmpty()) {
-                return ResponseEntity.badRequest().body("Không có lịch trình khả dụng cho bác sĩ này vào ngày này.");
-            }
-
-            VetSchedule randomSchedule = availableSchedules.get(random.nextInt(availableSchedules.size()));
+            VetSchedule randomSchedule = availableSchedules.get(random.nextInt(availableSchedules.size())); // Thay đổi ở đây
             booking.setVetSchedule(randomSchedule);
 
-            bookingService.createBooking(booking);
-
-            return ResponseEntity.ok("Booking created successfully!");
 
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Lỗi tạo booking: " + e.getMessage());
         }
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{bookingId}/vet/{vetId}")

@@ -81,13 +81,29 @@ public class BookingService {
         return feedback; // Trả về Feedback đã được lưu
     }
     //7 Tìm kiếm bác sĩ có chuyên môn phù hợp với loại dịch vụ
-    public List<Veterian> findAvailableVetsByDate(LocalDate date) {
+
+    public List<VetSchedule> findAvailableSchedulesByDate(LocalDate date) {
         List<VetSchedule> schedules = vetScheduleRepository.findByScheduleDateAndAvailability(date, true);
         List<Integer> vetIds = schedules.stream()
                 .map(schedule -> schedule.getVeterian().getVetID())
                 .distinct()
                 .collect(Collectors.toList());
-        return veterianRepository.findAllById(vetIds);
+
+        List<Veterian> vets = veterianRepository.findAllById(vetIds);
+
+        // Tạo một map để lưu trữ danh sách lịch trình cho mỗi bác sĩ
+        // Map<VetId, List<VetSchedule>> vetSchedulesMap = new HashMap<>();
+
+        // Group các lịch trình theo bác sĩ
+        return schedules.stream()
+                .peek(schedule -> {
+                    Veterian vet = vets.stream()
+                            .filter(v -> v.getVetID().equals(schedule.getVeterian().getVetID()))
+                            .findFirst()
+                            .orElse(null);
+                    schedule.setVeterian(vet);
+                })
+                .collect(Collectors.toList());
     }
 
 
