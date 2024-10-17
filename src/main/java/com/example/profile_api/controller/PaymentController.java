@@ -25,15 +25,8 @@ import java.util.*;
 public class PaymentController {
     @GetMapping("/create")
     public ResponseEntity<?> createPayment(HttpServletRequest request) throws UnsupportedEncodingException {
-
-//        String orderType = "other";
-//        long amount = Integer.parseInt(req.getParameter("amount")) * 100;
-//        String bankCode = req.getParameter("bankCode");
-
         long amount=1000000;
         String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
-//        String vnp_IpAddr = VNPayConfig.getIpAddress(req);
-
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
 
         Map<String, String> vnp_Params = new HashMap<>();
@@ -113,5 +106,45 @@ public class PaymentController {
         transactionStatusDTO.setData("");
          }
     return ResponseEntity.status(HttpStatus.OK).body(transactionStatusDTO);
+    }
+    @GetMapping("/vnpay_return")
+
+    public ResponseEntity<?> vnpayReturn(HttpServletRequest request) {
+        // 1. Lấy các tham số trả về từ VNPAY
+        Map<String, String> vnpayData = new HashMap<>();
+        Enumeration<String> paramNames = request.getParameterNames();
+        while (paramNames.hasMoreElements()) {
+            String paramName = paramNames.nextElement();
+            vnpayData.put(paramName, request.getParameter(paramName));
+
+        }
+
+        // 2. Kiểm tra chữ ký của VNPAY để đảm bảo tính toàn vẹn của dữ liệu
+        if (vnpayData.containsKey("vnp_SecureHash")) {
+            String vnp_SecureHash = vnpayData.get("vnp_SecureHash");
+            vnpayData.remove("vnp_SecureHash");
+            String secureHash = VNPayConfig.hashAllFields(vnpayData);
+            if (secureHash.equals(vnp_SecureHash)) {
+                // 3. Xử lý kết quả giao dịch
+                String vnp_ResponseCode = vnpayData.get("vnp_ResponseCode"); // Mã kết quả giao dịch
+
+                if ("00".equals(vnp_ResponseCode)) {
+                    // Giao dịch thành công
+                    // - Cập nhật trạng thái đơn hàng trong database
+                    // - Hiển thị thông báo thành công cho người dùng
+                    return ResponseEntity.ok("Giao dịch thành công!");
+
+                } else {
+                    // Giao dịch thất bại
+                    // - Xử lý lỗi và hiển thị thông báo cho người dùng
+                    return ResponseEntity.badRequest().body("Giao dịch thất bại: " + vnpayData.get("vnp_Message"));
+                }
+            } else {
+                // Chữ ký không hợp lệ
+                return ResponseEntity.badRequest().body("Chữ ký không hợp lệ!");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("Dữ liệu không hợp lệ!");
+        }
     }
 }

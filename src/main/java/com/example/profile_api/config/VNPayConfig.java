@@ -1,17 +1,27 @@
 package com.example.profile_api.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import javax.crypto.Mac;
+
 import javax.crypto.spec.SecretKeySpec;
+
 import java.io.UnsupportedEncodingException;
+
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+
 import java.security.MessageDigest;
+
 import java.security.NoSuchAlgorithmException;
+
 import java.util.*;
+
+
 
 public class VNPayConfig {
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_ReturnUrl = "http://localhost:8080/vnpay_jsp/vnpay_return.jsp";
+    public static String vnp_ReturnUrl = "http://localhost:8080/api/payment/vnpay_return";
     public static String vnp_TmnCode = "VVHLKKC6";
     public static String vnp_Version = "2.1.0";
     public static String vnp_Command = "pay";
@@ -52,6 +62,12 @@ public class VNPayConfig {
 
                 sb.append("=");
 
+                try {
+                    sb.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                } catch (UnsupportedEncodingException e) {
+                    // Xử lý exception
+                    e.printStackTrace();
+                }
                 sb.append(fieldValue);
             }
             if (itr.hasNext()) {
