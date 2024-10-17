@@ -7,6 +7,8 @@ package com.example.profile_api.controller;
 import com.example.profile_api.config.VNPayConfig;
 import com.example.profile_api.dto.PaymentResDTO;
 
+import com.example.profile_api.dto.TransactionStatusDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +24,7 @@ import java.util.*;
 @RequestMapping("/api/payment")
 public class PaymentController {
     @GetMapping("/create")
-    public ResponseEntity<?> createPayment() throws UnsupportedEncodingException {
+    public ResponseEntity<?> createPayment(HttpServletRequest request) throws UnsupportedEncodingException {
 
 //        String orderType = "other";
 //        long amount = Integer.parseInt(req.getParameter("amount")) * 100;
@@ -44,7 +46,9 @@ public class PaymentController {
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
         vnp_Params.put("vnp_Locale", "vn");
-
+        vnp_Params.put("vnp_IpAddr", VNPayConfig.getIpAddress(request));  // Lấy địa chỉ IP từ request
+        vnp_Params.put("vnp_OrderType", "other"); // Thay thế bằng loại đơn hàng phù hợp
+        vnp_Params.put("vnp_ReturnUrl",VNPayConfig.vnp_ReturnUrl );
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -89,5 +93,25 @@ public class PaymentController {
         paymentResDTO.setURL(paymentUrl);
 
         return ResponseEntity.status(HttpStatus.OK).body(paymentResDTO);
+    }
+    @GetMapping("/payment_infor")
+    public ResponseEntity<?> transaction(
+            @RequestParam(value="vnp_Amount") String amount,
+            @RequestParam(value="vnp_BankCode") String bankcode,
+            @RequestParam(value="vnp_OrderInfo") String order,
+            @RequestParam(value="vnp_ResponseCode") String responseCode
+    )
+    {
+        TransactionStatusDTO transactionStatusDTO = new TransactionStatusDTO();
+    if(responseCode.equals("00")){
+        transactionStatusDTO.setStatus("ok");
+        transactionStatusDTO.setMessage("Successfully");
+        transactionStatusDTO.setData("");
+    }else{
+        transactionStatusDTO.setStatus("No");
+        transactionStatusDTO.setMessage("Fail");
+        transactionStatusDTO.setData("");
+         }
+    return ResponseEntity.status(HttpStatus.OK).body(transactionStatusDTO);
     }
 }
