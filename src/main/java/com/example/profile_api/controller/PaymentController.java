@@ -4,68 +4,90 @@ package com.example.profile_api.controller;
 
 
 
-import com.example.profile_api.model.Payment;
-import com.example.profile_api.service.PaymentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.profile_api.config.VNPayConfig;
+import com.example.profile_api.dto.PaymentResDTO;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.Optional;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("/payment")
+@RequestMapping("/api/payment")
 public class PaymentController {
+    @GetMapping("/create")
+    public ResponseEntity<?> createPayment() throws UnsupportedEncodingException {
 
-    private final PaymentService paymentService;
+//        String orderType = "other";
+//        long amount = Integer.parseInt(req.getParameter("amount")) * 100;
+//        String bankCode = req.getParameter("bankCode");
 
-    @Autowired
-    public PaymentController(PaymentService paymentService) {
-        this.paymentService = paymentService;
-    }
+        long amount=1000000;
+        String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
+//        String vnp_IpAddr = VNPayConfig.getIpAddress(req);
 
-    // 1. Tạo một Payment mới
-    @PostMapping("/create")
-    public Payment createPayment(@RequestBody Payment payment) {
-        return paymentService.createPayment(payment);
-    }
+        String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
 
-    // 2. Lấy danh sách tất cả các Payment
-    @GetMapping("/all")
-    public List<Payment> getAllPayments() {
-        return paymentService.getAllPayments();
-    }
+        Map<String, String> vnp_Params = new HashMap<>();
+        vnp_Params.put("vnp_Version",VNPayConfig.vnp_Version);
+        vnp_Params.put("vnp_Command", VNPayConfig.vnp_Command);
+        vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+        vnp_Params.put("vnp_Amount", String.valueOf(amount));
+        vnp_Params.put("vnp_CurrCode", "VND");
+        vnp_Params.put("vnp_BankCode", "NCB");
+        vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
+        vnp_Params.put("vnp_Locale", "vn");
 
-    // 3. Lấy thông tin Payment theo ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Payment> getPaymentById(@PathVariable Integer id) {
-        Optional<Payment> payment = paymentService.getPaymentById(id);
-        if (payment.isPresent()) {
-            return ResponseEntity.ok(payment.get());
-        } else {
-            return ResponseEntity.notFound().build();
+
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        String vnp_CreateDate = formatter.format(cld.getTime());
+        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+
+        cld.add(Calendar.MINUTE, 15);
+        String vnp_ExpireDate = formatter.format(cld.getTime());
+        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+
+        List fieldNames = new ArrayList(vnp_Params.keySet());
+        Collections.sort(fieldNames);
+        StringBuilder hashData = new StringBuilder();
+        StringBuilder query = new StringBuilder();
+        Iterator itr = fieldNames.iterator();
+        while (itr.hasNext()) {
+            String fieldName = (String) itr.next();
+            String fieldValue = (String) vnp_Params.get(fieldName);
+            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+                //Build hash data
+                hashData.append(fieldName);
+                hashData.append('=');
+                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                //Build query
+                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
+                query.append('=');
+                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                if (itr.hasNext()) {
+                    query.append('&');
+                    hashData.append('&');
+                }
+            }
         }
-    }
+        String queryUrl = query.toString();
+        String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.secretKey, hashData.toString());
+        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+        String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
 
-    // 4. Cập nhật thông tin Payment
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Payment> updatePayment(@PathVariable Integer id, @RequestBody Payment paymentDetails) {
-        try {
-            Payment updatedPayment = paymentService.updatePayment(id, paymentDetails);
-            return ResponseEntity.ok(updatedPayment);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
+        PaymentResDTO paymentResDTO = new PaymentResDTO();
+        paymentResDTO.setStatus("ok");
+        paymentResDTO.setMessage("Successfully created payment");
+        paymentResDTO.setURL(paymentUrl);
 
-    // 5. Xóa một Payment theo ID
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deletePayment(@PathVariable Integer id) {
-        try {
-            paymentService.deletePayment(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(paymentResDTO);
     }
 }
