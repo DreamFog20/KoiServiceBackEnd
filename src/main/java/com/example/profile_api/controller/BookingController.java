@@ -1,10 +1,9 @@
 package com.example.profile_api.controller;
 
 import com.example.profile_api.dao.AvailableVetRequest;
-import com.example.profile_api.model.Booking;
-import com.example.profile_api.model.Feedback;
-import com.example.profile_api.model.VetSchedule;
-import com.example.profile_api.model.Veterian;
+import com.example.profile_api.dto.BookingRequestDto;
+import com.example.profile_api.dto.BookingResponseDto;
+import com.example.profile_api.model.*;
 import com.example.profile_api.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
@@ -113,34 +113,56 @@ public class BookingController {
     }
 
     @PostMapping("/random-vet")
-    public ResponseEntity<?> createBookingWithRandomVet(@RequestBody Booking booking) {
+    public ResponseEntity<?> createBookingWithRandomVet(@RequestBody BookingRequestDto bookingDto) {
         try {
-            // Kiểm tra xem User, Payment, Service có tồn tại không (giống method createBooking)
-            userService.getUserById(booking.getUser().getUserID())
+            // Lấy User, Payment, Service từ database dựa trên ID
+            User user = userService.getUserById(bookingDto.getUserID())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Người dùng không tồn tại."));
-            paymentService.getPaymentById(booking.getPayment().getPaymentID())
+            Payment payment = paymentService.getPaymentById(bookingDto.getPaymentID())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment không tồn tại."));
-            serviceService.getServiceById(booking.getService().getServiceID())
+            Service service = serviceService.getServiceById(bookingDto.getServiceID())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dịch vụ không tồn tại."));
 
-            LocalDate date = booking.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            List<VetSchedule> availableSchedules = bookingService.findAvailableSchedulesByDate(date); // Thay đổi ở đây
-
-            if (availableSchedules.isEmpty()) { // Thay đổi ở đây
+            // Tạo đối tượng Booking
+            Booking booking = new Booking();
+            booking.setUser(user);
+            booking.setPayment(payment);
+            booking.setService(service);
+            booking.setDate(bookingDto.getDate());
+            // ... gán các thuộc tính khác từ bookingDto
+            LocalDate localDate = bookingDto.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            // Tìm lịch trình bác sĩ thú y rảnh
+            List<VetSchedule> availableSchedules = bookingService.findAvailableSchedulesByDate(localDate);
+            if (availableSchedules.isEmpty()) {
                 return ResponseEntity.badRequest().body("Không có bác sĩ rảnh vào ngày này.");
             }
 
+            // Chọn ngẫu nhiên một lịch trình
             Random random = new Random();
-            VetSchedule randomSchedule = availableSchedules.get(random.nextInt(availableSchedules.size())); // Thay đổi ở đây
+            VetSchedule randomSchedule = availableSchedules.get(random.nextInt(availableSchedules.size()));
             booking.setVetSchedule(randomSchedule);
 
+            // Lưu booking
+            Booking savedBooking = bookingService.createBooking(booking);
 
+            // Tạo DTO để trả về
+            BookingResponseDto responseDto = new BookingResponseDto();
+            responseDto.setBookingID(savedBooking.getBookingID());
+            responseDto.setStatus(savedBooking.getStatus());
+            responseDto.setUser(savedBooking.getUser());
+            responseDto.setService((org.springframework.stereotype.Service) savedBooking.getService());
+            responseDto.setDate(savedBooking.getDate());
+            responseDto.setVetSchedule(savedBooking.getVetSchedule());
+
+            return ResponseEntity.created(URI.create("/api/bookings/" + savedBooking.getBookingID()))
+                    .body(responseDto);
+
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Lỗi tạo booking: " + e.getMessage());
         }
-        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{bookingId}/vet/{vetId}")

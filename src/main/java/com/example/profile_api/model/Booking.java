@@ -1,6 +1,7 @@
 
 package com.example.profile_api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "Booking")
+@JsonIgnoreProperties({"koi", "feedback"}) // Bỏ qua koi và feedback khi serialize/deserialize
 @Getter
 @Setter
 @AllArgsConstructor
@@ -23,41 +25,38 @@ public class Booking {
     private Integer bookingID;
 
     @Column(name = "status", nullable = false)
-    private String status; // Trạng thái của Booking
+    private String status;
 
-    // Quan hệ với bảng Users
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "userID", nullable = false)
     private User user;
 
-    // Quan hệ với bảng Koi
+    // Quan hệ với bảng Koi (có thể bỏ nếu không cần thiết)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "koiID", nullable = false)
     private Koi koi;
 
-    // Quan hệ với bảng Veterian (bác sĩ thú y)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vetID", nullable = true) // Cho phép vetID là null
+    @JoinColumn(name = "vetID", nullable = true)
     private Veterian vet;
 
-    // Quan hệ với bảng Service
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "serviceID", nullable = false)
     private Service service;
 
     @Column(name = "date", nullable = false)
-    @Temporal(TemporalType.DATE)
-    private Date date;
+    @Temporal(TemporalType.DATE) // Sử dụng annotation @Temporal để chỉ định kiểu dữ liệu Date
+    private Date date; // Sử dụng LocalDate
 
-    // Quan hệ với bảng Payment
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "paymentID", nullable = false)
+    @JoinColumn(name = "paymentID", nullable = true)
     private Payment payment;
 
-    // Quan hệ một-một với bảng Feedback
+    // Quan hệ một-một với bảng Feedback (có thể bỏ nếu không cần thiết)
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Feedback feedback; // Quan hệ một-một với bảng Feedback
+    private Feedback feedback;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "scheduleID", nullable = true) // Cho phép scheduleID là null
+    @JoinColumn(name = "scheduleID", nullable = true)
     private VetSchedule vetSchedule;
 }
