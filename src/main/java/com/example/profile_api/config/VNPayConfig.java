@@ -51,10 +51,12 @@ public class VNPayConfig {
 
         Collections.sort(fieldNames);
         StringBuilder sb = new StringBuilder();
+
         Iterator itr = fieldNames.iterator();
         while (itr.hasNext()) {
 
-            String fieldName = (String) itr.next();
+            String fieldName = (String)
+            itr.next();
 
             String fieldValue = (String) fields.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
@@ -62,13 +64,16 @@ public class VNPayConfig {
 
                 sb.append("=");
 
+
                 try {
                     sb.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
                 } catch (UnsupportedEncodingException e) {
                     // Xử lý exception
                     e.printStackTrace();
                 }
-                sb.append(fieldValue);
+
+                // ---->  Xóa dòng này <----
+                // sb.append(fieldValue);
             }
             if (itr.hasNext()) {
 
