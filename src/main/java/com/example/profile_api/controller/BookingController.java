@@ -131,28 +131,50 @@ public class BookingController {
             booking.setDate(bookingDto.getDate());
             // ... gán các thuộc tính khác từ bookingDto
             LocalDate localDate = bookingDto.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            // Tìm lịch trình bác sĩ thú y rảnh
-            List<VetSchedule> availableSchedules = bookingService.findAvailableSchedulesByDate(localDate);
-            if (availableSchedules.isEmpty()) {
-                return ResponseEntity.badRequest().body("Không có bác sĩ rảnh vào ngày này.");
+
+            VetSchedule selectedSchedule = null;
+
+            // Nếu người dùng chọn bác sĩ
+            if (bookingDto.getVetID() != null) {
+                // Tìm lịch trình của bác sĩ được chọn
+                List<VetSchedule> availableSchedules = bookingService.findAvailableSlotsByVetAndDate(bookingDto.getVetID(), localDate);
+
+                // Nếu có khung giờ cụ thể
+                if (bookingDto.getSlot() != null) {
+                    // Tìm lịch trình phù hợp với khung giờ
+                    selectedSchedule = availableSchedules.stream()
+                            .filter(schedule -> schedule.getSlot().equals(bookingDto.getSlot())) // So sánh với slot được tính toán
+                            .findFirst()
+                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Khung giờ không khả dụng."));
+                } else {
+                    // Chọn ngẫu nhiên một lịch trình của bác sĩ
+                    if (!availableSchedules.isEmpty()) {
+                        Random random = new Random();
+                        selectedSchedule = availableSchedules.get(random.nextInt(availableSchedules.size()));
+                    } else {
+                        return ResponseEntity.badRequest().body("Bác sĩ không rảnh vào ngày này.");
+                    }
+                }
+            } else {
+                // Tìm lịch trình bác sĩ thú y rảnh
+                List<VetSchedule> availableSchedules = bookingService.findAvailableSchedulesByDate(localDate);
+                if (availableSchedules.isEmpty()) {
+                    return ResponseEntity.badRequest().body("Không có bác sĩ rảnh vào ngày này.");
+                }
+
+                // Chọn ngẫu nhiên một lịch trình
+                Random random = new Random();
+                selectedSchedule = availableSchedules.get(random.nextInt(availableSchedules.size()));
             }
 
-            // Chọn ngẫu nhiên một lịch trình
-            Random random = new Random();
-            VetSchedule randomSchedule = availableSchedules.get(random.nextInt(availableSchedules.size()));
-            booking.setVetSchedule(randomSchedule);
+            booking.setVetSchedule(selectedSchedule);
 
             // Lưu booking
             Booking savedBooking = bookingService.createBooking(booking);
 
             // Tạo DTO để trả về
             BookingResponseDto responseDto = new BookingResponseDto();
-            responseDto.setBookingID(savedBooking.getBookingID());
-            responseDto.setStatus(savedBooking.getStatus());
-            responseDto.setUser(savedBooking.getUser());
-            responseDto.setService((org.springframework.stereotype.Service) savedBooking.getService());
-            responseDto.setDate(savedBooking.getDate());
-            responseDto.setVetSchedule(savedBooking.getVetSchedule());
+            // ... (gán các thuộc tính cho responseDto)
 
             return ResponseEntity.created(URI.create("/api/bookings/" + savedBooking.getBookingID()))
                     .body(responseDto);
@@ -164,7 +186,6 @@ public class BookingController {
                     .body("Lỗi tạo booking: " + e.getMessage());
         }
     }
-
     @PostMapping("/{bookingId}/vet/{vetId}")
     public ResponseEntity<Booking> assignVetToBooking(
             @PathVariable Integer bookingId,

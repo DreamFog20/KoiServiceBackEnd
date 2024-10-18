@@ -44,4 +44,11 @@ public class VetSchedule {
 
     @Column(name = "Availability", nullable = false)
     private Boolean availability;
+
+    public String getSlot() {
+        int startHour = this.startTime.getHour();
+        int endHour = this.endTime.getHour();
+        return String.format("%02d:00 - %02d:00", startHour, endHour);
+    }
+
 }

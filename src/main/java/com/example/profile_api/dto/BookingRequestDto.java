@@ -18,5 +18,6 @@ public class BookingRequestDto {
     private Integer serviceID;
     private Integer paymentID;
     private Date date;
-    // Các thuộc tính khác cần thiết
+    private Integer vetID;
+    private String slot;
 }
