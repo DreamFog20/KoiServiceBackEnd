@@ -11,4 +11,5 @@ public class BookingCreateDTO {
     private Long vetId;   // Instead of a Vet object
     private Integer serviceId;  // Instead of a Service object
     private String date;
+    private Integer  scheduleId;
 }

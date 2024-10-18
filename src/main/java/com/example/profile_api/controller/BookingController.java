@@ -30,6 +30,8 @@ public class BookingController {
     private final ServiceService serviceService;
     private final VeterianService veterianService;
     private final PaymentService paymentService;
+    @Autowired
+    private VetScheduleService vetScheduleService;
 
     @Autowired
     public BookingController(BookingService bookingService, UserService userService,
@@ -51,6 +53,7 @@ public class BookingController {
             Service service = serviceService.getServiceById(bookingDTO.getServiceId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy dịch vụ"));
 
+            VetSchedule vetSchedule = vetScheduleService.getVetScheduleById(bookingDTO.getScheduleId());
             Veterian vet = null;
             if (bookingDTO.getVetId() != null) {
                 try {
@@ -67,6 +70,7 @@ public class BookingController {
             booking.setUser(user);
             booking.setVet(vet);
             booking.setService(service);
+            booking.setVetSchedule(vetSchedule);
             bookingService.createBooking(booking);
             return ResponseEntity.ok("Booking created successfully!");
 
@@ -74,7 +78,7 @@ public class BookingController {
             ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 
-                .body("Lỗi tạo booking: " + ex.getMessage());
+                    .body("Lỗi tạo booking: " + ex.getMessage());
         }
     }
 
