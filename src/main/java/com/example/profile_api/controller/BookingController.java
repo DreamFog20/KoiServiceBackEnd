@@ -47,6 +47,10 @@ public class BookingController {
     @PostMapping(value = "/create")
     public ResponseEntity<String> createBooking(@RequestBody BookingCreateDTO bookingDTO) {
         try {
+            if (bookingDTO.getUserId() == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId không được để trống");
+            }
+
             User user = userService.getUserById(bookingDTO.getUserId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy người dùng"));
 
