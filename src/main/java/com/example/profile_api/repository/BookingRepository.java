@@ -20,6 +20,4 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     List<Booking> findByUserUserIDAndDate(Integer userId, LocalDate date);
 
     List<Booking> findByStatus(String status);
-
-    // Có thể thêm các phương thức custom khác nếu cần
 }

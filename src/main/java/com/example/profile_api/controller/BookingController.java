@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -45,47 +46,56 @@ public class BookingController {
     }
 
     @PostMapping(value = "/create")
-    public ResponseEntity<String> createBooking(@RequestBody BookingCreateDTO bookingDTO) {
+    public ResponseEntity<?> createBooking(@RequestBody BookingCreateDTO bookingDTO) {
         try {
-            if (bookingDTO.getUserId() == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId không được để trống");
-            }
+//            // Kiểm tra các ID
+//            if (bookingDTO.getUserID() == null) {
+//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId không được để trống");
+//            }
+//            if (bookingDTO.getServiceId() == null) {
+//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "serviceId không được để trống");
+//            }
+//            if (bookingDTO.getScheduleId() == null) {
+//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "scheduleId không được để trống");
+//            }
 
-            User user = userService.getUserById(bookingDTO.getUserId())
+            // Lấy các đối tượng từ database
+            User user = userService.getUserById(bookingDTO.getUserID())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy người dùng"));
-
-            Service service = serviceService.getServiceById(bookingDTO.getServiceId())
+            Service service = serviceService.getServiceById(bookingDTO.getServiceID())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy dịch vụ"));
+            VetSchedule vetSchedule = vetScheduleService.getVetScheduleById(bookingDTO.getScheduleID());
 
-            VetSchedule vetSchedule = vetScheduleService.getVetScheduleById(bookingDTO.getScheduleId());
             Veterian vet = null;
-            if (bookingDTO.getVetId() != null) {
-                try {
-                    Optional<Veterian> optionalVet = veterianService.getVeterianById(Math.toIntExact(bookingDTO.getVetId()));
-                    vet = optionalVet.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy bác sĩ thú y"));
+            Veterian newVet = new Veterian();
+            newVet.setVetID(bookingDTO.getVetID());
 
-                } catch (EntityNotFoundException e) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy bác sĩ thú y", e);
-                }
-            }
+//            if (bookingDTO.getVetId() != null) {
+//                vet = veterianService.getVeterianById(Math.toIntExact(bookingDTO.getVetId()))
+//                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy bác sĩ thú y"));;
+//            }
 
+            // Tạo booking
             Booking booking = new Booking();
             booking.setStatus(bookingDTO.getStatus());
             booking.setUser(user);
-            booking.setVet(vet);
+            booking.setVet(newVet);
             booking.setService(service);
+            booking.setDate(bookingDTO.getDate());
             booking.setVetSchedule(vetSchedule);
-            bookingService.createBooking(booking);
-            return ResponseEntity.ok("Booking created successfully!");
 
+            Booking savedBooking = bookingService.createBooking(booking);
+
+            return ResponseEntity.created(URI.create("/api/bookings/" + savedBooking.getBookingID())).build();
+
+        } catch (ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode()).body(ex.getReason());
         } catch (Exception ex) {
             ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-
                     .body("Lỗi tạo booking: " + ex.getMessage());
         }
     }
-
     @PutMapping("/status/{id}")
     public String updateBookingStatus(@PathVariable Integer id, @RequestParam String status) {
         if (status == null || status.isEmpty()) {

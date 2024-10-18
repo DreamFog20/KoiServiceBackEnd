@@ -1,15 +1,18 @@
 package com.example.profile_api.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Date;
 
 @Getter
 @Setter
 public class BookingCreateDTO {
     private String status;
-    private Integer userId;  // Instead of a User object
-    private Long vetId;   // Instead of a Vet object
-    private Integer serviceId;  // Instead of a Service object
-    private String date;
-    private Integer  scheduleId;
+    private int userID;
+    private int vetID;
+    private int serviceID;
+    private Date date;
+    private int  scheduleID;
 }

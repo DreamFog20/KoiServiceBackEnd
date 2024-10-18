@@ -18,6 +18,4 @@ public class BookingRequest {
     private LocalTime startTime;
     private LocalTime endTime;
     private String timeSlot;
-
-
 }

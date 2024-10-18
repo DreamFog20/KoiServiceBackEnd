@@ -23,7 +23,7 @@ public class Booking {
     @Column(name = "bookingID")
     private Integer bookingID;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = true)
     private String status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -31,8 +31,8 @@ public class Booking {
     private User user;
 
     // Quan hệ với bảng Koi (có thể bỏ nếu không cần thiết)
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "koiID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "koiID", nullable = true)
     private Koi koi;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,7 +47,7 @@ public class Booking {
     @Temporal(TemporalType.DATE) // Sử dụng annotation @Temporal để chỉ định kiểu dữ liệu Date
     private Date date; // Sử dụng LocalDate
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "paymentID", nullable = true)
     private Payment payment;
 
