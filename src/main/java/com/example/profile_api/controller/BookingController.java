@@ -39,14 +39,13 @@ public class BookingController {
         this.paymentService = paymentService;
     }
 
-    @PostMapping
-    public ResponseEntity<?> createBooking(@RequestBody Booking booking) {
+    @PostMapping(value = "/create", consumes = {"application/json", "application/json;charset=UTF-8"})
+    public ResponseEntity<String> createBooking(@RequestBody Booking booking) {
         try {
             // Kiểm tra xem User, Payment, Service có tồn tại không
             userService.getUserById(booking.getUser().getUserID())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Người dùng không tồn tại."));
-            paymentService.getPaymentById(booking.getPayment().getPaymentID())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment không tồn tại."));
+
             serviceService.getServiceById(booking.getService().getServiceID())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dịch vụ không tồn tại."));
 
@@ -118,15 +117,12 @@ public class BookingController {
             // Lấy User, Payment, Service từ database dựa trên ID
             User user = userService.getUserById(bookingDto.getUserID())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Người dùng không tồn tại."));
-            Payment payment = paymentService.getPaymentById(bookingDto.getPaymentID())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment không tồn tại."));
             Service service = serviceService.getServiceById(bookingDto.getServiceID())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dịch vụ không tồn tại."));
 
             // Tạo đối tượng Booking
             Booking booking = new Booking();
             booking.setUser(user);
-            booking.setPayment(payment);
             booking.setService(service);
             booking.setDate(bookingDto.getDate());
             // ... gán các thuộc tính khác từ bookingDto

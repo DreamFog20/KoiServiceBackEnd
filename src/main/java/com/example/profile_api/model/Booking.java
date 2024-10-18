@@ -12,7 +12,6 @@ import java.util.Date;
 
 @Entity
 @Table(name = "Booking")
-@JsonIgnoreProperties({"koi", "feedback"}) // Bỏ qua koi và feedback khi serialize/deserialize
 @Getter
 @Setter
 @AllArgsConstructor
