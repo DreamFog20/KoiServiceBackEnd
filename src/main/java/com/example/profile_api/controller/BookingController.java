@@ -1,10 +1,12 @@
 package com.example.profile_api.controller;
 
 import com.example.profile_api.dao.AvailableVetRequest;
+import com.example.profile_api.dto.BookingCreateDTO;
 import com.example.profile_api.dto.BookingRequestDto;
 import com.example.profile_api.dto.BookingResponseDto;
 import com.example.profile_api.model.*;
 import com.example.profile_api.service.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @RestController
@@ -39,29 +42,39 @@ public class BookingController {
         this.paymentService = paymentService;
     }
 
-    @PostMapping(value = "/create", consumes = {"application/json", "application/json;charset=UTF-8"})
-    public ResponseEntity<String> createBooking(@RequestBody Booking booking) {
+    @PostMapping(value = "/create")
+    public ResponseEntity<String> createBooking(@RequestBody BookingCreateDTO bookingDTO) {
         try {
-            // Kiểm tra xem User, Payment, Service có tồn tại không
-            userService.getUserById(booking.getUser().getUserID())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Người dùng không tồn tại."));
+            User user = userService.getUserById(bookingDTO.getUserId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy người dùng"));
 
-            serviceService.getServiceById(booking.getService().getServiceID())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dịch vụ không tồn tại."));
+            Service service = serviceService.getServiceById(bookingDTO.getServiceId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy dịch vụ"));
 
-            // Nếu có Veterian mới, lưu Veterian trước
-            if (booking.getVet() != null && booking.getVet().getVetID() == null) {
-                Veterian savedVet = veterianService.createVeterian(booking.getVet());
-                booking.setVet(savedVet);
+            Veterian vet = null;
+            if (bookingDTO.getVetId() != null) {
+                try {
+                    Optional<Veterian> optionalVet = veterianService.getVeterianById(Math.toIntExact(bookingDTO.getVetId()));
+                    vet = optionalVet.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy bác sĩ thú y"));
+
+                } catch (EntityNotFoundException e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy bác sĩ thú y", e);
+                }
             }
 
+            Booking booking = new Booking();
+            booking.setStatus(bookingDTO.getStatus());
+            booking.setUser(user);
+            booking.setVet(vet);
+            booking.setService(service);
             bookingService.createBooking(booking);
             return ResponseEntity.ok("Booking created successfully!");
 
         } catch (Exception ex) {
-            ex.printStackTrace(); // In ra stack trace để debug
+            ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Lỗi tạo booking: " + ex.getMessage());
+
+                .body("Lỗi tạo booking: " + ex.getMessage());
         }
     }
 
