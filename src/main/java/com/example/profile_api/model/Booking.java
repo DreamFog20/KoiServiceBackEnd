@@ -35,7 +35,7 @@ public class Booking {
     @JoinColumn(name = "koiID", nullable = true)
     private Koi koi;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "vetID", nullable = true)
     private Veterian vet;
 

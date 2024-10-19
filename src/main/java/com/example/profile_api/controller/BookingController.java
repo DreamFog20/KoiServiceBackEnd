@@ -66,14 +66,8 @@ public class BookingController {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy dịch vụ"));
             VetSchedule vetSchedule = vetScheduleService.getVetScheduleById(bookingDTO.getScheduleID());
 
-            Veterian vet = null;
             Veterian newVet = new Veterian();
-            newVet.setVetID(bookingDTO.getVetID());
-
-//            if (bookingDTO.getVetId() != null) {
-//                vet = veterianService.getVeterianById(Math.toIntExact(bookingDTO.getVetId()))
-//                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy bác sĩ thú y"));;
-//            }
+            newVet.setVetID(vetSchedule.getVeterian().getVetID());
 
             // Tạo booking
             Booking booking = new Booking();
