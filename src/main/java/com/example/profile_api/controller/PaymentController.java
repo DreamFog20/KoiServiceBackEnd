@@ -8,6 +8,8 @@ import com.example.profile_api.config.VNPayConfig;
 import com.example.profile_api.dto.PaymentResDTO;
 
 import com.example.profile_api.dto.TransactionStatusDTO;
+import com.example.profile_api.model.Payment;
+import com.example.profile_api.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,12 @@ import java.util.*;
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/payment")
 public class PaymentController {
+    private final PaymentService paymentService;
+
+    public PaymentController(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
+
     @GetMapping("/create")
     public ResponseEntity<?> createPayment(HttpServletRequest request) throws UnsupportedEncodingException {
         long amount=1000000;
@@ -89,10 +97,12 @@ public class PaymentController {
     }
     @GetMapping("/payment_infor")
     public ResponseEntity<?> transaction(
-            @RequestParam(value="vnp_Amount") String amount,
+            @RequestParam(value="vnp_Amount") Double amount,
             @RequestParam(value="vnp_BankCode") String bankcode,
             @RequestParam(value="vnp_OrderInfo") String order,
-            @RequestParam(value="vnp_ResponseCode") String responseCode
+            @RequestParam(value="vnp_ResponseCode") String responseCode,
+            @RequestParam(value = "vnp_PayDate", required = false) Date payDate,  // Không để required = false
+            @RequestParam(value = "vnp_TxnRef",required = false) String txnRef
     )
     {
         TransactionStatusDTO transactionStatusDTO = new TransactionStatusDTO();
@@ -100,6 +110,14 @@ public class PaymentController {
         transactionStatusDTO.setStatus("ok");
         transactionStatusDTO.setMessage("Successfully");
         transactionStatusDTO.setData("");
+    Payment payment = new Payment();
+    payment.setTotalAmount(amount);
+    payment.setPaymentDate(payDate);
+    payment.setPaymentMethod(bankcode);
+    payment.setStatus(responseCode);
+    paymentService.createPayment(payment);
+
+
     }else{
         transactionStatusDTO.setStatus("No");
         transactionStatusDTO.setMessage("Fail");
