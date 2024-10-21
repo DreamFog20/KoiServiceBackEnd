@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
+        boolean existsByVnp_TransactionNo (String vnp_TransactionNo);
+
 }

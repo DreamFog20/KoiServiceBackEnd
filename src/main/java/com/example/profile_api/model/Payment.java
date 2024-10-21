@@ -26,13 +26,17 @@ public class Payment {
     @Column(name = "totalAmount", nullable = false)
     private Double totalAmount;
 
-    @Column(name = "paymentMethod", nullable = false)
-    private String paymentMethod;
+//    @Column(name = "paymentMethod", nullable = false)
+//    private String paymentMethod;
 
     @Column(name = "paymentDate", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date paymentDate;
 
+    @Column(name = "vnp_TransactionNo")
+    private String vnp_TransactionNo;
+    @Column(name="BankCode")
+    private String bankCode;
     @Column(name = "status", nullable = false)
     private String status;
 

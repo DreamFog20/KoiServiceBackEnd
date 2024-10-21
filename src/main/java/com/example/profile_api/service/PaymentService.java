@@ -41,7 +41,7 @@ public class PaymentService {
                 .orElseThrow(() -> new RuntimeException("Payment not found with id " + paymentID));
 
         payment.setTotalAmount(paymentDetails.getTotalAmount());
-        payment.setPaymentMethod(paymentDetails.getPaymentMethod());
+        payment.setBankCode(paymentDetails.getBankCode());
         payment.setPaymentDate(paymentDetails.getPaymentDate());
         payment.setStatus(paymentDetails.getStatus());
         // Cập nhật các thuộc tính khác nếu có
@@ -54,5 +54,9 @@ public class PaymentService {
         Payment payment = paymentRepository.findById(paymentID)
                 .orElseThrow(() -> new RuntimeException("Payment not found with id " + paymentID));
         paymentRepository.delete(payment);
+    }
+    // Trong PaymentService.java
+    public boolean existsByVnp_TransactionNo(String vnp_TransactionNo) {
+        return paymentRepository.existsByVnp_TransactionNo(vnp_TransactionNo);
     }
 }

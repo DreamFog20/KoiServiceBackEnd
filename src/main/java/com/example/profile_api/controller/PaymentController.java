@@ -9,13 +9,17 @@ import com.example.profile_api.dto.PaymentResDTO;
 
 import com.example.profile_api.dto.TransactionStatusDTO;
 import com.example.profile_api.model.Payment;
+import com.example.profile_api.model.Service;
 import com.example.profile_api.service.PaymentService;
+import com.example.profile_api.service.ServiceService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.ServiceNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -27,14 +31,17 @@ import java.util.*;
 @RequestMapping("/api/payment")
 public class PaymentController {
     private final PaymentService paymentService;
-
+    @Autowired
+    private ServiceService serviceService;
     public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
     }
 
     @GetMapping("/create")
-    public ResponseEntity<?> createPayment(HttpServletRequest request) throws UnsupportedEncodingException {
-        long amount=1000000;
+    public ResponseEntity<?> createPayment(@RequestParam("serviceID") Integer serviceID,HttpServletRequest request) throws UnsupportedEncodingException, ServiceNotFoundException {
+        Service service = serviceService.getServiceById(serviceID)
+                .orElseThrow(() -> new ServiceNotFoundException("Service not found"));
+        long amount = service.getBasePrice().longValue();
         String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
 
@@ -103,10 +110,18 @@ public class PaymentController {
             @RequestParam(value="vnp_OrderInfo") String order,
             @RequestParam(value="vnp_ResponseCode") String responseCode,
             @RequestParam("vnp_PayDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date payDate,  // Không để required = false
-            @RequestParam(value = "vnp_TxnRef",required = false) String txnRef
-    )
+            @RequestParam(value = "vnp_TxnRef",required = false) String txnRef,
+            @RequestParam(value="vnp_TransactionNo") String vnp_TransactionNo
+
+        )
     {
         TransactionStatusDTO transactionStatusDTO = new TransactionStatusDTO();
+
+        if (paymentService.existsByVnp_TransactionNo(vnp_TransactionNo)) {
+            transactionStatusDTO.setStatus("failed");
+            transactionStatusDTO.setMessage("Duplicate transaction.");
+            return ResponseEntity.badRequest().body(transactionStatusDTO);
+        }
     if(responseCode.equals("00")){
         transactionStatusDTO.setStatus("ok");
         transactionStatusDTO.setMessage("Successfully");
@@ -114,8 +129,9 @@ public class PaymentController {
     Payment payment = new Payment();
     payment.setTotalAmount(amount);
     payment.setPaymentDate(payDate);
-    payment.setPaymentMethod(bankcode);
+    payment.setBankCode(bankcode);
     payment.setStatus(responseCode);
+    payment.setVnp_TransactionNo(vnp_TransactionNo);
     paymentService.createPayment(payment);
 
 
