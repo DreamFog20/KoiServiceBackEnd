@@ -41,7 +41,7 @@ public class PaymentController {
     public ResponseEntity<?> createPayment(@RequestParam("serviceID") Integer serviceID,HttpServletRequest request) throws UnsupportedEncodingException, ServiceNotFoundException {
         Service service = serviceService.getServiceById(serviceID)
                 .orElseThrow(() -> new ServiceNotFoundException("Service not found"));
-        long amount = service.getBasePrice().longValue();
+        long amount = service.getBasePrice().longValue()*100;
         String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
 
