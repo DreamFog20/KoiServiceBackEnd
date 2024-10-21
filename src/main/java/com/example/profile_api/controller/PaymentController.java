@@ -11,6 +11,7 @@ import com.example.profile_api.dto.TransactionStatusDTO;
 import com.example.profile_api.model.Payment;
 import com.example.profile_api.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -101,7 +102,7 @@ public class PaymentController {
             @RequestParam(value="vnp_BankCode") String bankcode,
             @RequestParam(value="vnp_OrderInfo") String order,
             @RequestParam(value="vnp_ResponseCode") String responseCode,
-            @RequestParam(value = "vnp_PayDate", required = false) Date payDate,  // Không để required = false
+            @RequestParam("vnp_PayDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date payDate,  // Không để required = false
             @RequestParam(value = "vnp_TxnRef",required = false) String txnRef
     )
     {
