@@ -17,7 +17,13 @@ public class ServiceService {
     public ServiceService(ServiceRepository serviceRepository) {
         this.serviceRepository = serviceRepository;
     }
+    public List<Service> getServicesByType(String serviceType) {
+        return serviceRepository.findByServiceType(serviceType);
+    }
 
+    public List<Service> searchServicesByName(String name) {
+        return serviceRepository.findByNameContaining(name);
+    }
     // Tạo mới một dịch vụ
     public Service createService(Service service) {
         return serviceRepository.save(service);

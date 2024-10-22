@@ -58,4 +58,15 @@ public class ServiceController {
         serviceService.deleteService(serviceID);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/type/{serviceType}")
+    public ResponseEntity<List<Service>> getServicesByType(@PathVariable String serviceType) {
+        List<Service> services = serviceService.getServicesByType(serviceType);
+        return ResponseEntity.ok(services);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Service>> searchServicesByName(@RequestParam String name) {
+        List<Service> services = serviceService.searchServicesByName(name);
+        return ResponseEntity.ok(services);
+    }
 }
