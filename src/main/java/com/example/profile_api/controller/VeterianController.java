@@ -3,10 +3,15 @@ package com.example.profile_api.controller;
 
 
 import com.example.profile_api.model.Veterian;
+import com.example.profile_api.service.DoctorAssignmentService;
 import com.example.profile_api.service.VeterianService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,11 +19,12 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/veterian")
 public class VeterianController {
-
+    private final DoctorAssignmentService doctorAssignmentService;
     private final VeterianService veterianService;
 
     @Autowired
-    public VeterianController(VeterianService veterianService) {
+    public VeterianController(DoctorAssignmentService doctorAssignmentService, VeterianService veterianService) {
+        this.doctorAssignmentService = doctorAssignmentService;
         this.veterianService = veterianService;
     }
 
@@ -63,6 +69,19 @@ public class VeterianController {
             veterianService.deleteVeterian(id);
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @PostMapping("/assign")
+    public ResponseEntity<Veterian> assignDoctor(
+            @RequestParam String serviceType,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime time) {
+
+        Veterian assignedVet = doctorAssignmentService.assignDoctor(serviceType, date, time);
+        if (assignedVet != null) {
+            return ResponseEntity.ok(assignedVet);
+        } else {
             return ResponseEntity.notFound().build();
         }
     }

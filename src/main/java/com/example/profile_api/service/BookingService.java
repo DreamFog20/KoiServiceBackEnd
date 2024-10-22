@@ -1,10 +1,7 @@
 
 package com.example.profile_api.service;
 
-import com.example.profile_api.model.Booking;
-import com.example.profile_api.model.Feedback;
-import com.example.profile_api.model.VetSchedule;
-import com.example.profile_api.model.Veterian;
+import com.example.profile_api.model.*;
 import com.example.profile_api.repository.BookingRepository;
 import com.example.profile_api.repository.VetScheduleRepository;
 import com.example.profile_api.repository.VeterianRepository;
@@ -20,17 +17,21 @@ import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
-    @Autowired
+
     private VeterianRepository veterianRepository;
 
-    @Autowired
-    private VetScheduleRepository vetScheduleRepository;
-    private final BookingRepository bookingRepository;
 
+    private VetScheduleRepository vetScheduleRepository;
+
+    private final BookingRepository bookingRepository;
     @Autowired
-    public BookingService(BookingRepository bookingRepository) {
+    public BookingService(BookingRepository bookingRepository, VetScheduleRepository vetScheduleRepository, VeterianRepository veterianRepository) {
         this.bookingRepository = bookingRepository;
+        this.vetScheduleRepository = vetScheduleRepository;
+        this.veterianRepository = veterianRepository;
     }
+
+
 
     // 1. Tạo mới một Booking
     public Booking createBooking(Booking booking) {
@@ -138,11 +139,11 @@ public class BookingService {
         return bookingRepository.findByStatus(status);
     }
 
-    public List<Booking> getBookingHistoryByKoiId(Integer koiId) {
-        return bookingRepository.findBookingsByKoiId(koiId);
+    public List<Booking> getBookingHistoryByKoiId(Integer  koiID) {
+        return bookingRepository.findBookingsByKoiId(koiID);
     }
 
-    public List<Booking> getBookingHistoryByUserId(Integer userId) {
-        return bookingRepository.findBookingsByUserId(userId);
+    public List<Booking> getBookingHistoryByUserId(Integer  userID) {
+        return bookingRepository.findByUserUserIDAndDate(userID);
     }
 }

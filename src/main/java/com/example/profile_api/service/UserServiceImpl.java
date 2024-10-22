@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
             user.setPhoneNumber(updatedUser.getPhoneNumber());
             return userRepository.save(user);
         }).orElseGet(() -> {
-            updatedUser.setUserID(id);
+            updatedUser.setId(id);
             return userRepository.save(updatedUser);
         });
     }

@@ -26,24 +26,25 @@ import java.util.Random;
 @RequestMapping("/api/bookings")
 public class BookingController {
 
-    private final BookingService bookingService;
-    private final UserService userService;
-    private final ServiceService serviceService;
-    private final VeterianService veterianService;
-    private final PaymentService paymentService;
-    @Autowired
-    private VetScheduleService vetScheduleService;
+    private  BookingService bookingService;
+    private  UserService userService;
+    private  ServiceService serviceService;
+    private  VeterianService veterianService;
+    private  PaymentService paymentService;
 
+    private VetScheduleService vetScheduleService;
     @Autowired
-    public BookingController(BookingService bookingService, UserService userService,
-                             ServiceService serviceService, VeterianService veterianService,
-                             PaymentService paymentService) {
+    public BookingController(BookingService bookingService, UserService userService, ServiceService serviceService,
+                             VeterianService veterianService, PaymentService paymentService)
+    {
         this.bookingService = bookingService;
         this.userService = userService;
         this.serviceService = serviceService;
         this.veterianService = veterianService;
         this.paymentService = paymentService;
+
     }
+
 
     @PostMapping(value = "/create")
     public ResponseEntity<?> createBooking(@RequestBody BookingCreateDTO bookingDTO) {
@@ -88,7 +89,7 @@ public class BookingController {
         return "Booking status updated successfully!";
     }
 
-    @GetMapping
+    @GetMapping("/getAll")
     public List<Booking> getAllBookings() {
         return bookingService.getAllBookings();
     }
@@ -196,7 +197,7 @@ public class BookingController {
                     .body("Lỗi tạo booking: " + e.getMessage());
         }
     }
-    @GetMapping
+    @GetMapping("/status")
     public List<Booking> getBookingsByStatus(@RequestParam(required
             = false) String status) {
         if (status != null) {
@@ -206,14 +207,14 @@ public class BookingController {
         }
     }
     @GetMapping("/history/koi/{koiId}")
-    public ResponseEntity<List<Booking>> getBookingHistoryByKoiId(@PathVariable Integer koiId) {
-        List<Booking> bookings = bookingService.getBookingHistoryByKoiId(koiId);
+    public ResponseEntity<List<Booking>> getBookingHistoryByKoiId(@PathVariable Integer  koiID) {
+        List<Booking> bookings = bookingService.getBookingHistoryByKoiId(koiID);
         return ResponseEntity.ok(bookings);
     }
 
     @GetMapping("/history/user/{userId}")
-    public ResponseEntity<List<Booking>> getBookingHistoryByUserId(@PathVariable Integer userId) {
-        List<Booking> bookings = bookingService.getBookingHistoryByUserId(userId);
+    public ResponseEntity<List<Booking>> getBookingHistoryByUserId(@PathVariable Integer  userID) {
+        List<Booking> bookings = bookingService.getBookingHistoryByUserId(userID);
         return ResponseEntity.ok(bookings);
     }
     @PostMapping("/{bookingId}/vet/{vetId}")

@@ -17,10 +17,10 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query("SELECT b FROM Booking b WHERE b.vet.vetID = :vetId AND b.date = :date")
     List<Booking> findByVetVetIDAndDate(@Param("vetId") Integer vetId, @Param("date") LocalDate date);
 
-    List<Booking> findByUserUserIDAndDate(Integer userId, LocalDate date);
-
     List<Booking> findByStatus(String status);
-    List<Booking> findBookingsByKoiId(Integer koiId);
+    @Query("SELECT b FROM Booking b WHERE b.koi.koiId = :koiId") // Truy vấn JPQL rõ ràng
+    List<Booking> findBookingsByKoiId(@Param("koiId") Integer koiId);
 
-    List<Booking> findBookingsByUserId(Integer userId);
+    @Query("SELECT b FROM Booking b WHERE b.user.id = :userId AND b.date = :date")
+    List<Booking> findByUserUserIDAndDate(@Param("userId") Integer userId);
 }

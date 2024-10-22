@@ -19,8 +19,8 @@ public class Koi {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "koiID")
-    private Integer koiID;
+    @Column(name = "koiId")
+    private Integer koiId;
 
     @Column(name = "name", nullable = false)
     private String name;
