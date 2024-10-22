@@ -3,7 +3,9 @@ package com.example.profile_api.controller;
 
 import com.example.profile_api.config.JwtGeneratorInterface;
 import com.example.profile_api.dao.LoginToken;
+import com.example.profile_api.model.Booking;
 import com.example.profile_api.model.User;
+import com.example.profile_api.repository.BookingRepository;
 import com.example.profile_api.service.UserService;
 import com.example.profile_api.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-
+    private BookingRepository bookingRepository;
     private JwtGeneratorInterface jwtGenerator;
     private UserService userService;
 
@@ -83,5 +85,10 @@ public class UserController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
-
+    //Lấy lịch sử booking của người dùng (khách hàng):
+    @GetMapping("/{id}/bookings")
+    public ResponseEntity<List<Booking>> getBookingHistory(@PathVariable Integer id) {
+        List<Booking> bookings = bookingRepository.findByUserId(id);
+        return ResponseEntity.ok(bookings);
+    }
 }
