@@ -33,7 +33,7 @@ public class DoctorAssignmentService {
         // Kiểm tra lịch trình của từng bác sĩ
         for (Veterian vet : vets) {
             Integer doctorId = vet.getVetID();
-            List<VetSchedule> schedules = vetScheduleRepository.findByVeterianVetIDAndScheduleDate(doctorId, date);
+            List<VetSchedule> schedules = vetScheduleRepository.findByVetIdAndScheduleDate(doctorId, date);
             for (VetSchedule schedule : schedules) {
                 if (schedule.getStartTime().isBefore(time) && schedule.getEndTime().isAfter(time) && schedule.getAvailability()) {
                     return vet; // Trả về bác sĩ đầu tiên có sẵn lịch trình
