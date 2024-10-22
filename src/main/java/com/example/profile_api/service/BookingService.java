@@ -134,4 +134,15 @@ public class BookingService {
         booking.setVet(vet);
         return bookingRepository.save(booking);
     }
+    public List<Booking> getBookingsByStatus(String status) {
+        return bookingRepository.findByStatus(status);
+    }
+
+    public List<Booking> getBookingHistoryByKoiId(Integer koiId) {
+        return bookingRepository.findBookingsByKoiId(koiId);
+    }
+
+    public List<Booking> getBookingHistoryByUserId(Integer userId) {
+        return bookingRepository.findBookingsByUserId(userId);
+    }
 }

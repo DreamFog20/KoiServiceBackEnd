@@ -48,17 +48,6 @@ public class BookingController {
     @PostMapping(value = "/create")
     public ResponseEntity<?> createBooking(@RequestBody BookingCreateDTO bookingDTO) {
         try {
-//            // Kiểm tra các ID
-//            if (bookingDTO.getUserID() == null) {
-//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId không được để trống");
-//            }
-//            if (bookingDTO.getServiceId() == null) {
-//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "serviceId không được để trống");
-//            }
-//            if (bookingDTO.getScheduleId() == null) {
-//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "scheduleId không được để trống");
-//            }
-
             // Lấy các đối tượng từ database
             User user = userService.getUserById(bookingDTO.getUserID())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy người dùng"));
@@ -206,6 +195,26 @@ public class BookingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Lỗi tạo booking: " + e.getMessage());
         }
+    }
+    @GetMapping
+    public List<Booking> getBookingsByStatus(@RequestParam(required
+            = false) String status) {
+        if (status != null) {
+            return bookingService.getBookingsByStatus(status);
+        } else {
+            return bookingService.getAllBookings();
+        }
+    }
+    @GetMapping("/history/koi/{koiId}")
+    public ResponseEntity<List<Booking>> getBookingHistoryByKoiId(@PathVariable Integer koiId) {
+        List<Booking> bookings = bookingService.getBookingHistoryByKoiId(koiId);
+        return ResponseEntity.ok(bookings);
+    }
+
+    @GetMapping("/history/user/{userId}")
+    public ResponseEntity<List<Booking>> getBookingHistoryByUserId(@PathVariable Integer userId) {
+        List<Booking> bookings = bookingService.getBookingHistoryByUserId(userId);
+        return ResponseEntity.ok(bookings);
     }
     @PostMapping("/{bookingId}/vet/{vetId}")
     public ResponseEntity<Booking> assignVetToBooking(
