@@ -1,23 +1,28 @@
 
 package com.example.profile_api.controller;
 
+import com.example.profile_api.dto.ServiceRevenue;
 import com.example.profile_api.model.Service;
+import com.example.profile_api.service.ReportService;
 import com.example.profile_api.service.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/services")
 public class ServiceController {
-
+    private final ReportService reportService;
     private final ServiceService serviceService;
 
     @Autowired
-    public ServiceController(ServiceService serviceService) {
+    public ServiceController(ReportService reportService, ServiceService serviceService) {
+        this.reportService = reportService;
         this.serviceService = serviceService;
     }
 
@@ -68,5 +73,15 @@ public class ServiceController {
     public ResponseEntity<List<Service>> searchServicesByName(@RequestParam String name) {
         List<Service> services = serviceService.searchServicesByName(name);
         return ResponseEntity.ok(services);
+    }
+    //Báo cáo tài chính, doanh thu theo dịch vụ
+    @GetMapping("/service-revenue")
+    public ResponseEntity<List<ServiceRevenue>> getServiceRevenue(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        List<ServiceRevenue>
+        revenue = reportService.getServiceRevenue(startDate, endDate);
+        return ResponseEntity.ok(revenue);
     }
 }
