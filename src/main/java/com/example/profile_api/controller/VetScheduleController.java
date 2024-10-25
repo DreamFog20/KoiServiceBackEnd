@@ -24,7 +24,7 @@ public class VetScheduleController {
     @Autowired
     private VeterianRepository veterianRepository;
 
-    @PostMapping
+    @PostMapping("/create")
 
     public ResponseEntity<VetSchedule> createVetSchedule(@RequestBody VetScheduleRequest request) {
         // Tạo VetSchedule từ VetScheduleRequest
@@ -48,7 +48,7 @@ public class VetScheduleController {
 
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<VetSchedule>> getAllVetSchedules() {
         List<VetSchedule> vetSchedules = vetScheduleService.getAllVetSchedules();
         return new ResponseEntity<>(vetSchedules, HttpStatus.OK);

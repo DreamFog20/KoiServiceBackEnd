@@ -21,13 +21,13 @@ public class KoiController {
     }
 
     // Tạo mới một cá Koi
-    @PostMapping
+    @PostMapping("/create")
     public Koi createKoi(@RequestBody Koi koi) {
         return koiService.createKoi(koi);
     }
 
     // Lấy danh sách tất cả cá Koi
-    @GetMapping
+    @GetMapping("/all")
     public List<Koi> getAllKoi() {
         return koiService.getAllKoi();
     }

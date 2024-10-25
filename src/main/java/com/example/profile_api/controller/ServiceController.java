@@ -34,7 +34,7 @@ public class ServiceController {
     }
 
     // Lấy danh sách tất cả dịch vụ
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Service>> getAllServices() {
         List<Service> services = serviceService.getAllServices();
         return ResponseEntity.ok(services);

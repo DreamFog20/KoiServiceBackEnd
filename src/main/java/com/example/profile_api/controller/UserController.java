@@ -27,7 +27,7 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    public UserController(UserServiceImpl userService, JwtGeneratorInterface jwtGenerator){
+    public UserController(UserServiceImpl userService, JwtGeneratorInterface jwtGenerator, BookingRepository bookingRepository){
         this.userService=userService;
         this.jwtGenerator=jwtGenerator;
     }
