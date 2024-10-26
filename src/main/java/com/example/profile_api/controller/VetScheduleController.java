@@ -48,7 +48,7 @@ public class VetScheduleController {
 
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<VetSchedule>> getAllVetSchedules() {
         List<VetSchedule> vetSchedules = vetScheduleService.getAllVetSchedules();
         return new ResponseEntity<>(vetSchedules, HttpStatus.OK);
