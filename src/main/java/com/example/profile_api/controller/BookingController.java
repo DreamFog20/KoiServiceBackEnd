@@ -89,7 +89,7 @@ public class BookingController {
         return "Booking status updated successfully!";
     }
 
-    @GetMapping("/getAll")
+    @GetMapping
     public List<Booking> getAllBookings() {
         return bookingService.getAllBookings();
     }

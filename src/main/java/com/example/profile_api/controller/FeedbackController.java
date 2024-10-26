@@ -28,7 +28,7 @@ public class FeedbackController {
     }
 
     // 2. Lấy danh sách tất cả các Feedback
-    @GetMapping("/all")
+    @GetMapping
     public List<Feedback> getAllFeedbacks() {
         return feedbackService.getAllFeedbacks();
     }

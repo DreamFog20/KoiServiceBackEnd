@@ -35,7 +35,7 @@ public class VeterianController {
     }
 
     // 2. Lấy danh sách tất cả các Veterian
-    @GetMapping("/all")
+    @GetMapping
     public List<Veterian> getAllVeterians() {
         return veterianService.getAllVeterians();
     }

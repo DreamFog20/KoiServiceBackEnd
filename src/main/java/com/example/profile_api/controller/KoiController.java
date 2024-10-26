@@ -27,7 +27,7 @@ public class KoiController {
     }
 
     // Lấy danh sách tất cả cá Koi
-    @GetMapping("/all")
+    @GetMapping
     public List<Koi> getAllKoi() {
         return koiService.getAllKoi();
     }
