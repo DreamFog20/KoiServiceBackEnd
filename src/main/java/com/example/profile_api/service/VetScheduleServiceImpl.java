@@ -1,11 +1,13 @@
 
 package com.example.profile_api.service;
 
+import com.example.profile_api.dto.VetScheduleCreateDTO;
 import com.example.profile_api.model.VetSchedule;
 import com.example.profile_api.repository.VetScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -33,17 +35,21 @@ public class VetScheduleServiceImpl implements VetScheduleService {
     @Override
 
 
-    public VetSchedule updateVetSchedule(Integer scheduleID, VetSchedule vetSchedule) {
+    public VetSchedule updateVetSchedule(Integer scheduleID, VetScheduleCreateDTO vetScheduleCreateDTO) {
         VetSchedule existingVetSchedule = getVetScheduleById(scheduleID);
-        existingVetSchedule.setVeterian(vetSchedule.getVeterian());
-        existingVetSchedule.setScheduleDate(vetSchedule.getScheduleDate());
 
-        // Cập nhật startTime và endTime thay vì timeSlot
-        existingVetSchedule.setStartTime(vetSchedule.getStartTime());
-        existingVetSchedule.setEndTime(vetSchedule.getEndTime());
+        existingVetSchedule.setScheduleDate(vetScheduleCreateDTO.getScheduleDate());
 
-        existingVetSchedule.setType(vetSchedule.getType());
-        existingVetSchedule.setAvailability(vetSchedule.getAvailability());
+        // Chuyển đổi LocalDate sang LocalTime (ví dụ: lấy thời gian bắt đầu là 00:00)
+        LocalTime startTime = vetScheduleCreateDTO.getStartTime().atStartOfDay().toLocalTime();
+        LocalTime endTime = vetScheduleCreateDTO.getEndTime().atStartOfDay().toLocalTime();
+
+        existingVetSchedule.setStartTime(startTime);
+        existingVetSchedule.setEndTime(endTime);
+
+        existingVetSchedule.setType(vetScheduleCreateDTO.getType());
+        existingVetSchedule.setAvailability(vetScheduleCreateDTO.getAvailability());
+
         return vetScheduleRepository.save(existingVetSchedule);
     }
 
