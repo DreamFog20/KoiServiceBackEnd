@@ -207,14 +207,14 @@ public class BookingController {
         }
     }
     @GetMapping("/history/koi/{koiId}")
-    public ResponseEntity<List<Booking>> getBookingHistoryByKoiId(@PathVariable Integer  koiID) {
-        List<Booking> bookings = bookingService.getBookingHistoryByKoiId(koiID);
+    public ResponseEntity<List<Booking>> getBookingHistoryByKoiId(@PathVariable Integer  koiId) {
+        List<Booking> bookings = bookingService.getBookingHistoryByKoiId(koiId);
         return ResponseEntity.ok(bookings);
     }
 
     @GetMapping("/history/user/{userId}")
-    public ResponseEntity<List<Booking>> getBookingHistoryByUserId(@PathVariable Integer  userID) {
-        List<Booking> bookings = bookingService.getBookingHistoryByUserId(userID);
+    public ResponseEntity<List<Booking>> getBookingHistoryByUserId(@PathVariable Integer  userId) {
+        List<Booking> bookings = bookingService.getBookingHistoryByUserId(userId);
         return ResponseEntity.ok(bookings);
     }
     @PostMapping("/{bookingId}/vet/{vetId}")

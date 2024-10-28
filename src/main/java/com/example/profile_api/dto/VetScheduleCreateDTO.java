@@ -12,8 +12,8 @@ import java.time.LocalTime;
 @Setter
 public class VetScheduleCreateDTO {
     private LocalDate scheduleDate;
-    private LocalDate startTime;
-    private LocalDate endTime;
+    private String startTime;
+    private String endTime;
     private String type;
     private Boolean availability;
     private Integer vetID;

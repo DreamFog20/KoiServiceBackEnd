@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
 
 @RestController
@@ -28,8 +30,23 @@ public class VetScheduleController {
     public ResponseEntity<VetSchedule> createVetSchedule(@RequestBody VetScheduleCreateDTO request) {
         VetSchedule vetSchedule = new VetSchedule();
         vetSchedule.setScheduleDate(request.getScheduleDate());
-        LocalTime startTime = request.getStartTime().atStartOfDay().toLocalTime();
-        LocalTime endTime = request.getEndTime().atStartOfDay().toLocalTime();
+
+        // Lấy giá trị String từ request
+        String startTimeString = request.getStartTime();
+        String endTimeString = request.getEndTime();
+
+
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendOptional(DateTimeFormatter.ofPattern("HH:mm"))
+                .appendOptional(DateTimeFormatter.ofPattern("H:mm"))
+                .toFormatter();
+        LocalTime startTime = LocalTime.parse(startTimeString, formatter);
+        LocalTime endTime = LocalTime.parse(endTimeString, formatter);
+
+        // Gán giá trị LocalTime cho vetSchedule
+        vetSchedule.setStartTime(startTime);
+        vetSchedule.setEndTime(endTime);
+
         vetSchedule.setType(request.getType());
         vetSchedule.setAvailability(request.getAvailability());
 

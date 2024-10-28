@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
 
 @Service
@@ -40,9 +42,16 @@ public class VetScheduleServiceImpl implements VetScheduleService {
 
         existingVetSchedule.setScheduleDate(vetScheduleCreateDTO.getScheduleDate());
 
-        // Chuyển đổi LocalDate sang LocalTime (ví dụ: lấy thời gian bắt đầu là 00:00)
-        LocalTime startTime = vetScheduleCreateDTO.getStartTime().atStartOfDay().toLocalTime();
-        LocalTime endTime = vetScheduleCreateDTO.getEndTime().atStartOfDay().toLocalTime();
+
+        String startTimeString = vetScheduleCreateDTO.getStartTime();
+        String endTimeString = vetScheduleCreateDTO.getEndTime();
+
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendOptional(DateTimeFormatter.ofPattern("HH:mm"))
+                .appendOptional(DateTimeFormatter.ofPattern("H:mm"))
+                .toFormatter();
+        LocalTime startTime = LocalTime.parse(startTimeString, formatter);
+        LocalTime endTime = LocalTime.parse(endTimeString, formatter);
 
         existingVetSchedule.setStartTime(startTime);
         existingVetSchedule.setEndTime(endTime);
