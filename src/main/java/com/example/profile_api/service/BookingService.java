@@ -110,6 +110,8 @@ public class BookingService {
 
     public List<VetSchedule> findAvailableSlotsByVetAndDate(Integer vetId, LocalDate date) {
         List<VetSchedule> schedules = vetScheduleRepository.findByVeterianVetIDAndScheduleDateAndAvailability(vetId, date, true);
+
+        // Gọi đúng phương thức findByVetVetIDAndDate đã được định nghĩa trong BookingRepository
         List<Booking> bookings = bookingRepository.findByVetVetIDAndDate(vetId, date);
 
         List<Integer> bookedScheduleIds = bookings.stream()
@@ -142,8 +144,10 @@ public class BookingService {
     public List<Booking> getBookingHistoryByKoiId(Integer  koiID) {
         return bookingRepository.findBookingsByKoiId(koiID);
     }
-
     public List<Booking> getBookingHistoryByUserId(Integer  userID) {
-        return bookingRepository.findByUserUserIDAndDate(userID);
+        LocalDate date = LocalDate.now(); // Hoặc lấy ngày từ nguồn khác, ví dụ từ request
+        return bookingRepository.findByUserUserIDAndDate(userID, Optional.of(date));
     }
+
+
 }

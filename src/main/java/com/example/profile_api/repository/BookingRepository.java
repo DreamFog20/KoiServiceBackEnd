@@ -11,9 +11,13 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
+
+    @Query("SELECT b FROM Booking b WHERE b.user.id = :userId AND (:date IS NULL OR b.date = :date)")
+    List<Booking> findByUserUserIDAndDate(@Param("userId") Integer userId, @Param("date") Optional<LocalDate> date);
 
     @Query("SELECT b FROM Booking b WHERE b.vet.vetID = :vetId AND b.date = :date")
     List<Booking> findByVetVetIDAndDate(@Param("vetId") Integer vetId, @Param("date") LocalDate date);
@@ -22,8 +26,6 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query("SELECT b FROM Booking b WHERE b.koi.koiId = :koiId") // Truy vấn JPQL rõ ràng
     List<Booking> findBookingsByKoiId(@Param("koiId") Integer koiId);
 
-    @Query("SELECT b FROM Booking b WHERE b.user.id = :userId AND b.date = :date")
-    List<Booking> findByUserUserIDAndDate(@Param("userId") Integer userId);
 
     @Query("SELECT new com.example.profile_api.dto.ServiceRevenue(s.name, SUM(s.basePrice)) " +
             "FROM Service s " +
