@@ -35,4 +35,6 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "GROUP BY s.name")
     List<ServiceRevenue> getServiceRevenue(LocalDate startDate, LocalDate endDate);
     List<Booking> findByUserId(Integer userId);
+    List<Booking> findByVetSchedule_ScheduleID(Integer scheduleId);
+
 }

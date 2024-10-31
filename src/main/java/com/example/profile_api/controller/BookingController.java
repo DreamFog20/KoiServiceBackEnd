@@ -2,6 +2,7 @@ package com.example.profile_api.controller;
 
 import com.example.profile_api.dao.AvailableVetRequest;
 import com.example.profile_api.dto.BookingCreateDTO;
+import com.example.profile_api.dto.BookingDTO;
 import com.example.profile_api.dto.BookingRequestDto;
 import com.example.profile_api.dto.BookingResponseDto;
 import com.example.profile_api.model.*;
@@ -227,5 +228,10 @@ public class BookingController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
         }
+    }
+    @GetMapping("/schedule/{scheduleId}")
+    public ResponseEntity<List<BookingDTO>> getBookingsByVetScheduleId(@PathVariable Integer scheduleId) {
+        List<BookingDTO> bookingDTOs = bookingService.getBookingsByVetScheduleIdDTO(scheduleId);
+        return ResponseEntity.ok(bookingDTOs);
     }
 }

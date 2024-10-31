@@ -1,6 +1,7 @@
 
 package com.example.profile_api.service;
 
+import com.example.profile_api.dto.BookingDTO;
 import com.example.profile_api.model.*;
 import com.example.profile_api.repository.BookingRepository;
 import com.example.profile_api.repository.VetScheduleRepository;
@@ -149,5 +150,35 @@ public class BookingService {
         return bookingRepository.findByUserUserIDAndDate(userID, Optional.of(date));
     }
 
+    public List<BookingDTO> getBookingsByVetScheduleIdDTO(Integer scheduleId) {
+        // 1. Tìm tất cả các Booking có scheduleId giống với scheduleId đầu vào
+        List<Booking> bookings = bookingRepository.findByVetSchedule_ScheduleID(scheduleId);
+
+        // 2. Chuyển đổi danh sách Booking thành danh sách BookingDTO
+        List<BookingDTO> bookingDTOs = new ArrayList<>();
+        for (Booking booking : bookings) {
+            BookingDTO dto = new BookingDTO();
+            dto.setBookingID(booking.getBookingID());
+            dto.setStatus(booking.getStatus());
+
+            User user = booking.getUser();
+            if (user != null) {
+                dto.setUserID(user.getId());
+                dto.setUserName(user.getUsername());
+            }
+
+            Veterian vet = booking.getVet();
+            if (vet != null) {
+                dto.setVetID(vet.getVetID());
+                dto.setVetName(vet.getName());
+            }
+
+            dto.setDate(booking.getDate());
+
+            bookingDTOs.add(dto); // Thêm BookingDTO vào danh sách
+        }
+
+        return bookingDTOs; // Trả về danh sách BookingDTO
+    }
 
 }
