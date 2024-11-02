@@ -7,7 +7,6 @@ import com.example.profile_api.dto.BookingRequestDto;
 import com.example.profile_api.dto.BookingResponseDto;
 import com.example.profile_api.model.*;
 import com.example.profile_api.service.*;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -32,17 +28,17 @@ public class BookingController {
     private  ServiceService serviceService;
     private  VeterianService veterianService;
     private  PaymentService paymentService;
-
     private VetScheduleService vetScheduleService;
     @Autowired
     public BookingController(BookingService bookingService, UserService userService, ServiceService serviceService,
-                             VeterianService veterianService, PaymentService paymentService)
+                             VeterianService veterianService, PaymentService paymentService,VetScheduleService vetScheduleService)
     {
         this.bookingService = bookingService;
         this.userService = userService;
         this.serviceService = serviceService;
         this.veterianService = veterianService;
         this.paymentService = paymentService;
+        this.vetScheduleService =  vetScheduleService;
 
     }
 
@@ -186,7 +182,7 @@ public class BookingController {
 
             // Tạo DTO để trả về
             BookingResponseDto responseDto = new BookingResponseDto();
-            // ... (gán các thuộc tính cho responseDto)
+
 
             return ResponseEntity.created(URI.create("/api/bookings/" + savedBooking.getBookingID()))
                     .body(responseDto);
