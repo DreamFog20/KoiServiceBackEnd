@@ -1,7 +1,11 @@
 package com.example.profile_api.service;
 
+import com.example.profile_api.dto.PrescriptionDTO;
 import com.example.profile_api.model.Prescription;
+import com.example.profile_api.model.Record;
 import com.example.profile_api.repository.PrescriptionRepository;
+import com.example.profile_api.repository.RecordRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +17,22 @@ public class PrescriptionService {
 
     @Autowired
     private PrescriptionRepository prescriptionRepository;
+    @Autowired
+    private RecordRepository recordRepository;
 
-    public Prescription createPrescription(Prescription prescription) {
-        return prescriptionRepository.save(prescription);
+    public PrescriptionDTO createPrescription(Prescription prescription) {
+        // ... (logic xử lý) ...
+
+        Prescription savedPrescription = prescriptionRepository.save(prescription);
+
+        // Chuyển đổi Prescription sang PrescriptionDTO
+        return new PrescriptionDTO(
+                savedPrescription.getPrescriptionID(),
+                savedPrescription.getVeterian().getVetID(),
+                savedPrescription.getRecord().getRecordID(),
+                savedPrescription.getMedication(),
+                savedPrescription.getInstruction()
+        );
     }
 
     public List<Prescription> getAllPrescriptions() {

@@ -1,5 +1,6 @@
 package com.example.profile_api.controller;
 
+import com.example.profile_api.dto.PrescriptionDTO;
 import com.example.profile_api.model.Prescription;
 import com.example.profile_api.service.PrescriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,8 @@ public class PrescriptionController {
 
     // Tạo mới một đơn thuốc
     @PostMapping
-    public ResponseEntity<Prescription> createPrescription(@RequestBody Prescription prescription) {
-        Prescription createdPrescription = prescriptionService.createPrescription(prescription);
+    public ResponseEntity<PrescriptionDTO> createPrescription(@RequestBody Prescription prescription) {
+        PrescriptionDTO createdPrescription = prescriptionService.createPrescription(prescription);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPrescription);
     }
 

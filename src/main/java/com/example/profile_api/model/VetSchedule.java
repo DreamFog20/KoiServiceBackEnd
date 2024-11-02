@@ -26,10 +26,9 @@ public class VetSchedule {
     private Integer scheduleID;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "VetID", nullable = true)
-    @JsonManagedReference
+    @JoinColumn(name = "VetID", nullable = false)
+    @JsonBackReference
     private Veterian veterian;
-
     @Column(name = "Schedule_Date", nullable = false)
     private LocalDate scheduleDate;
 

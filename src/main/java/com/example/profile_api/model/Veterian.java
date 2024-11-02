@@ -42,7 +42,6 @@ public class Veterian {
     private List<Booking> booking;
 
     @OneToMany(mappedBy = "veterian", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonBackReference
-
+    @JsonManagedReference
     private List<VetSchedule> vetSchedules;
 }

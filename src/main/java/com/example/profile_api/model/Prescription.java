@@ -1,6 +1,7 @@
 
 package com.example.profile_api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,9 +21,11 @@ public class Prescription {
     @Column(name = "PrescriptionID")
     private Integer prescriptionID;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "VetID", nullable = false)
     private Veterian veterian; // Quan hệ với bảng Veterian (Bác sĩ thú y)
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RecordID", nullable = false)
@@ -33,5 +36,6 @@ public class Prescription {
 
     @Column(name = "Instruction", nullable = false)
     private String instruction; // Hướng dẫn sử dụng thuốc
+
 
 }
